@@ -1,0 +1,36 @@
+from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
+from . import views
+
+urlpatterns = [
+    path('menu/', views.menu_list, name='menu-list'),
+    path('foods/', views.foods_list, name='foods-list'),
+    path('drinks/', views.drinks_list, name='drinks-list'),
+    path('ingredients/', views.ingredient_list, name='ingredient-list'),
+    path('contact/', views.contact_submit, name='contact-submit'),
+    path('contact/messages/', views.contact_messages, name='contact-messages'),
+    path('auth/register/', views.register, name='register'),
+    path('auth/login/', views.login, name='login'),
+    path('auth/me/', views.me, name='me'),
+    path('auth/profile/', views.profile, name='profile'),
+    path('auth/change-password/', views.change_password, name='change-password'),
+    path('auth/forgot-password/', views.forgot_password, name='forgot-password'),
+    path('auth/reset-password/', views.reset_password, name='reset-password'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('admin/login/', views.admin_login, name='admin-login'),
+    path('admin/dashboard/', views.admin_dashboard, name='admin-dashboard'),
+    path('admin/add-food/', views.admin_add_food, name='admin-add-food'),
+    path('admin/add-drink/', views.admin_add_drink, name='admin-add-drink'),
+    path('admin/create-user/', views.admin_create_user, name='admin-create-user'),
+    path('admin/menu-items/', views.admin_menu_items, name='admin-menu-items'),
+    path('admin/menu-items/<int:item_id>/', views.admin_menu_item_detail, name='admin-menu-item-detail'),
+    path('admin/users/', views.admin_users, name='admin-users'),
+    path('admin/users/<int:user_id>/', views.admin_user_detail, name='admin-user-detail'),
+    path('admin/upload-image/', views.upload_image, name='upload-image'),
+    path('menu/<int:item_id>/', views.menu_item_detail, name='menu-item-detail'),
+    path('orders/', views.place_order, name='place-order'),
+    path('orders/my/', views.my_orders, name='my-orders'),
+    path('orders/all/', views.all_orders, name='all-orders'),
+    path('orders/<int:order_id>/', views.order_detail, name='order-detail'),
+    path('orders/<int:order_id>/cancel/', views.cancel_order, name='cancel-order'),
+]

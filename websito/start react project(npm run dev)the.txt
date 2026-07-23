@@ -1,0 +1,425 @@
+start react project(npm run dev)the generate this respectively,install reactbit,framer motion,shadcn,ui_ux_max skill to perform this The type of website you're describing is often called a Cinematic Scroll Experience, Scrollytelling Website, or Interactive Storytelling Website. Instead of users simply scrolling through sections, the scroll itself controls a continuous animation, making the website feel like a movie or interactive commercial.
+
+Companies like Apple, Nike, Tesla, Porsche, and premium product brands use this style to make visitors emotionally engaged.
+
+Your Idea (Detailed Description)
+
+Imagine opening a restaurant website.
+
+The screen is dark with dramatic lighting.
+
+A burger appears in the center, but it isn't assembled.
+
+Every ingredient floats separately:
+
+Top bun
+Lettuce
+Tomato
+Onion
+Cheese
+Beef patty
+Sauce drops
+Bottom bun
+
+Each ingredient slowly rotates with realistic physics.
+
+Steam rises.
+
+Tiny particles float.
+
+Soft light reflects from the ingredients.
+
+Nothing is static.
+
+The user doesn't click anything.
+
+Instead—
+
+the mouse wheel controls the entire animation.
+
+As the user scrolls,
+
+the camera moves closer,
+
+objects smoothly animate,
+
+ingredients begin moving toward each other.
+
+Each scroll step tells another part of the story.
+
+For example:
+
+Section 1
+
+Huge headline
+
+Crafted With Passion
+
+Burger pieces floating apart.
+
+Only logo appears.
+
+No navigation distraction.
+
+Scroll Down
+
+Camera slowly zooms.
+
+Ingredients start aligning.
+
+The beef rotates.
+
+Cheese falls naturally.
+
+Tomatoes spin.
+
+Lettuce waves.
+
+Steam increases.
+
+Everything follows the scroll position.
+
+Not a video—
+
+Real 3D-like animation.
+
+Scroll Again
+
+Text fades in.
+
+"Our beef is freshly grilled every day."
+
+Button slides upward.
+
+Background transforms.
+
+Particles continue moving.
+
+Scroll Again
+
+Burger becomes almost complete.
+
+Sauce pours slowly.
+
+Camera rotates around the burger.
+
+Floating ingredients now synchronize.
+
+Final Section
+
+Burger completely assembled.
+
+Beautiful lighting.
+
+Call-to-action appears.
+
+Order Now
+
+View Menu
+
+Find Store
+
+Everything ends perfectly.
+
+The visitor feels like they watched a premium commercial.
+
+This Style is Called
+Scrollytelling
+Scroll-driven Animation
+Cinematic Landing Page
+Interactive Product Storytelling
+Scroll Narrative Experience
+Immersive Motion Website
+Story-based UI
+Motion-driven UX
+Apple-style Product Presentation
+Premium Landing Experience
+Technologies
+React
+
+Builds the application.
+
+Framer Motion
+
+Smooth animations
+
+Page transitions
+
+Element motion
+
+Layout animations
+
+Text reveal
+
+Scale
+
+Opacity
+
+Anime.js
+
+Timeline animations
+
+Physics
+
+Complex sequences
+
+Object synchronization
+
+Morphing
+
+Floating
+
+Elastic movement
+
+React Bits
+
+Premium animated UI components like:
+
+BlurText
+SplitText
+ShinyText
+InfiniteGrid
+GlareCard
+PixelTrail
+Spotlight
+Aurora
+Gradient Orbs
+Magnetic Buttons
+Animated Cursor
+Text Reveal
+Floating Cards
+Noise Background
+Particle Systems
+GSAP ScrollTrigger (optional but highly recommended)
+
+Maps scroll directly to animation progress.
+
+Example:
+
+Scroll = Animation
+
+0% scroll
+Burger exploded
+
+40%
+Ingredients moving
+
+70%
+Almost complete
+
+100%
+Burger assembled
+Lenis
+
+Smooth scrolling.
+
+Removes default browser scroll.
+
+Makes scrolling cinematic.
+
+Three.js or React Three Fiber (optional)
+
+Adds realistic depth.
+
+Lighting
+
+Shadows
+
+Camera motion
+
+3D objects
+
+Parallax
+
+How It Works
+
+Instead of this:
+
+Section 1
+
+↓
+
+Section 2
+
+↓
+
+Section 3
+
+The entire page becomes one continuous animation:
+
+User Scroll
+
+↓
+
+Animation Progress
+
+↓
+
+Objects Move
+
+↓
+
+Camera Moves
+
+↓
+
+Text Appears
+
+↓
+
+Background Changes
+
+↓
+
+Buttons Reveal
+
+↓
+
+Story Continues
+Key Components
+Hero
+
+Large cinematic introduction
+
+Story Section
+
+Explains the product
+
+Animation Timeline
+
+Objects respond to scroll.
+
+Product Showcase
+
+Interactive presentation
+
+Features
+
+Animated cards
+
+About
+
+Storytelling
+
+Gallery
+
+Images appear while scrolling.
+
+Testimonials
+
+Cards animate into view.
+
+Pricing/Menu
+
+Interactive motion.
+
+CTA
+
+Final dramatic animation.
+
+Footer
+
+Elegant ending.
+
+Motion Principles
+
+Everything should have:
+
+Smooth easing
+Motion blur feel
+Inertia
+Elastic movement
+Stagger animations
+Scroll-linked progress
+Floating idle animations
+Parallax layers
+Scale transitions
+Opacity fades
+Rotation
+Depth
+Light changes
+
+No sudden jumps.
+
+Everything feels alive.
+
+UX Principles
+
+The user should feel like they are watching an advertisement.
+
+The scroll should never feel like changing pages.
+
+Instead:
+
+One Story
+
+↓
+
+One Camera
+
+↓
+
+One Animation
+
+↓
+
+One Journey
+Example Timeline
+0%
+
+Logo
+
+Burger exploded
+
+Headline
+
+↓
+
+15%
+
+Camera zoom
+
+↓
+
+25%
+
+Ingredients rotate
+
+↓
+
+40%
+
+Text appears
+
+↓
+
+55%
+
+Cheese falls
+
+↓
+
+70%
+
+Burger almost assembled
+
+↓
+
+85%
+
+Buttons fade in
+
+↓
+
+100%
+
+Burger complete
+
+CTA
+Example Master Prompt
+
+Create a premium cinematic scrollytelling website in React that feels like an interactive commercial rather than a traditional webpage. Use React Bits components, Framer Motion, Anime.js, Lenis smooth scrolling, and optionally GSAP ScrollTrigger or React Three Fiber for scroll-driven storytelling. Build the experience as one continuous animation where every section transitions seamlessly without abrupt page changes. As the user scrolls, animation progress is tied directly to scroll position, with smooth easing, inertia, parallax, staggered reveals, dynamic lighting, floating particles, and depth effects.
+
+The hero begins with a gourmet burger exploded into separate floating ingredients (top bun, lettuce, tomato, onion, cheese, beef patty, sauces, bottom bun). Each ingredient gently rotates, floats, and reacts with realistic motion while steam and subtle particles create a premium atmosphere. With each scroll, the ingredients gradually align and assemble into a finished burger while the camera subtly zooms, pans, and rotates around it. Throughout the journey, headlines, descriptions, statistics, feature cards, pricing, testimonials, and call-to-action buttons appear through elegant text reveals and motion synchronized to the burger assembly. Backgrounds, colors, gradients, lighting, and UI elements transition continuously so the experience feels like a cinematic product launch rather than a sequence of independent sections.
+
+**Design the interface with world-class UI/UX using glassmorphism, premium typography, responsive layouts, accessible interactions, magnetic buttons, animated gradients, spotlight effects, BlurText, SplitText, GlareCard, PixelTrail, and other React Bits components. Ensure 60 FPS performance, lazy loading where appropriate, and a fully responsive experience across desktop, tablet, and mobile. The result should feel comparable to Apple's product pages or a luxury brand advertisement, where scrolling tells a compelling visual story and every animation has purpose. 
