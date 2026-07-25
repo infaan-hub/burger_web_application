@@ -4,7 +4,7 @@ services:
     runtime: python
     region: oregon
     plan: free
-    buildCommand: cd burgersito && pip install -r requirements.txt && (python manage.py migrate --noinput && python manage.py seed || echo "DB not reachable during build, run manually after deploy")
+    buildCommand: cd burgersito && pip install -r requirements.txt
     startCommand: cd burgersito && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --timeout 120
     envVars:
       - key: DJANGO_SETTINGS_MODULE
