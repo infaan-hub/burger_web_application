@@ -37,7 +37,7 @@ function CookieConsent() {
           transition={{ duration: 0.4, ease: 'easeOut' }}
           className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
         >
-          <div className="max-w-5xl mx-auto bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+          <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-2xl border border-white/20 rounded-2xl p-6 md:p-8 shadow-2xl">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
