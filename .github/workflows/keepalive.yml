@@ -1,0 +1,25 @@
+name: Keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Supabase & Render
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database
+        run: |
+          curl -s --max-time 30 "${{ secrets.SUPABASE_URL }}/rest/v1/" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" || true
+
+      - name: Ping Backend (Render)
+        run: |
+          curl -s --max-time 30 "https://burgersupreme.onrender.com/api/health/" || true
+
+      - name: Ping Frontend (Vercel)
+        run: |
+          curl -s --max-time 30 "https://infaanburgersupreme.vercel.app/" || true

@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import connections
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -23,6 +25,20 @@ from .serializers import (
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {'refresh': str(refresh), 'access': str(refresh.access_token)}
+
+
+# ─── Health ───
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    db_ok = False
+    try:
+        connections['default'].cursor().execute('SELECT 1')
+        db_ok = True
+    except Exception:
+        pass
+    return Response({'status': 'ok', 'database': db_ok})
 
 
 # ─── Menu ───

@@ -1,10 +1,74 @@
-import { Flame, ChevronDown, Beef, Wheat, Sparkles, Star, ArrowRight, Cherry, Coffee, CupSoda, Drumstick, Croissant, Droplets, Sandwich, Cookie } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Flame, ChevronDown, Beef, Wheat, Sparkles, Star, ArrowRight, Cherry, Coffee, CupSoda, Drumstick, Croissant, Droplets, Sandwich, Cookie, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFoods, getDrinks, getIngredients, getAuth } from '../api'
 
 const iconMap = { Beef, Wheat, Sparkles, Cherry, Coffee, CupSoda, Drumstick, Croissant, Droplets, Sandwich, Cookie, Flame }
+
+function CookieConsent() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie_consent')
+    if (!consent) {
+      const timer = setTimeout(() => setVisible(true), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  const accept = () => {
+    localStorage.setItem('cookie_consent', 'all')
+    setVisible(false)
+  }
+
+  const reject = () => {
+    localStorage.setItem('cookie_consent', 'necessary')
+    setVisible(false)
+  }
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
+        >
+          <div className="max-w-5xl mx-auto bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <Cookie size={20} className="text-amber-400" />
+                  <h3 className="text-white font-semibold text-sm uppercase tracking-wider">Your privacy matters</h3>
+                </div>
+                <p className="text-white/50 text-sm leading-relaxed">
+                  We use cookies to enhance your browsing experience, provide personalized content, and analyze our traffic. You can choose which cookies you allow.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                <button onClick={accept} className="px-6 py-2.5 bg-amber-400 text-black font-bold text-xs uppercase tracking-widest rounded-full hover:bg-amber-300 transition-colors cursor-pointer whitespace-nowrap">
+                  Accept All
+                </button>
+                <button onClick={reject} className="px-6 py-2.5 border border-white/20 text-white/80 font-semibold text-xs uppercase tracking-widest rounded-full hover:bg-white/5 transition-colors cursor-pointer whitespace-nowrap">
+                  Reject Non-Essential
+                </button>
+                <button onClick={reject} className="px-6 py-2.5 text-white/40 text-xs uppercase tracking-wider hover:text-white/60 transition-colors cursor-pointer whitespace-nowrap">
+                  Cookie Settings
+                </button>
+              </div>
+            </div>
+            <button onClick={reject} className="absolute top-3 right-3 text-white/30 hover:text-white/60 transition-colors cursor-pointer md:hidden">
+              <X size={18} />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
 
 export default function Home() {
   const navigate = useNavigate()
@@ -30,6 +94,7 @@ export default function Home() {
 
   return (
     <>
+      <CookieConsent />
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-center overflow-hidden bg-dark">
         <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">

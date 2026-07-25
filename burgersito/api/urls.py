@@ -3,6 +3,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from . import views
 
 urlpatterns = [
+    path('health/', views.health_check, name='health-check'),
     path('menu/', views.menu_list, name='menu-list'),
     path('foods/', views.foods_list, name='foods-list'),
     path('drinks/', views.drinks_list, name='drinks-list'),
