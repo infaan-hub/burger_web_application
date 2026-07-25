@@ -10,14 +10,16 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings
       - key: SECRET_KEY
-        sync: false
+        value: "est8*n1=m*04$x1^8+eqr9)pajy@=&hv3&jyo5^zhzq#md27v7"
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: ".onrender.com,burgersupreme.onrender.com"
+        value: ".onrender.com,burgersupreme.onrender.com,localhost,127.0.0.1"
       - key: DATABASE_URL
-        sync: false
+        value: "postgresql://postgres:Infaan%402005%40@db.ejqpnxagsyuxeariycif.supabase.co:5432/postgres"
+      - key: CORS_ALLOW_ALL_ORIGINS
+        value: "False"
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://infaanburgersupreme.vercel.app"
+        value: "https://infaanburgersupreme.vercel.app,http://localhost:5173"
       - key: PYTHON_VERSION
         value: "3.14"
