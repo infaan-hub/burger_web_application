@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 from api.models import MenuItem, Ingredient
 
 
@@ -6,6 +7,14 @@ class Command(BaseCommand):
     help = 'Seed the database with initial data'
 
     def handle(self, *args, **kwargs):
+        admin, created = User.objects.get_or_create(username='burgeradmin', defaults={'email': 'admin@burgersupreme.com', 'is_staff': True, 'is_superuser': True})
+        if not created:
+            admin.is_staff = True
+            admin.is_superuser = True
+        admin.set_password('admin123')
+        admin.save()
+        self.stdout.write(self.style.SUCCESS(f'Superuser burgeradmin {"created" if created else "updated"}'))
+
         MenuItem.objects.all().delete()
         Ingredient.objects.all().delete()
 
