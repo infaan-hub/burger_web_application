@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, KeyRound } from 'lucide-react'
 import { resetPassword } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function ResetPassword() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
@@ -32,9 +33,7 @@ export default function ResetPassword() {
   if (done) {
     return (
       <div className="relative min-h-screen flex items-center justify-center bg-dark overflow-hidden">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-<source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark" />
         <div className="relative z-10 text-center">
           <KeyRound size={48} className="text-amber-400 mx-auto mb-4" />
@@ -48,9 +47,7 @@ export default function ResetPassword() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-dark overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/46660/46660-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/46660/46660-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark" />
 
       <div className="relative z-10 w-full max-w-md mx-auto px-6">

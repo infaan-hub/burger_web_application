@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Minus, Plus, MapPin, Navigation, CheckCircle, XCircle, ShoppingBag } from 'lucide-react'
 import { getMenuItem, placeOrder, getProfile, getAuth, getMyOrders, cancelOrder } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function Order() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -106,9 +107,7 @@ export default function Order() {
 
   if (!id) return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
       <div className="relative z-10 pt-24 pb-16 px-6 md:px-8">
         <div className="max-w-3xl mx-auto">
@@ -173,9 +172,7 @@ export default function Order() {
 
   if (done) return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
       <div className="relative z-10 py-24 px-6 md:px-8">
         <div className="max-w-4xl mx-auto text-center mb-12">
@@ -244,9 +241,7 @@ export default function Order() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
 
       <div className="relative z-10 pt-24 pb-16 px-6 md:px-8">

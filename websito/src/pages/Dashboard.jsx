@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Flame, ShoppingCart } from 'lucide-react'
 import { getFoods, getDrinks, getAuth } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function Dashboard() {
   const navigate = useNavigate()
   const auth = getAuth()
@@ -23,9 +24,7 @@ export default function Dashboard() {
     <div className="bg-black min-h-screen pt-20">
       {/* FOODS */}
       <section className="relative overflow-hidden py-24 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/46660/46660-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/46660/46660-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-12">
@@ -55,9 +54,7 @@ export default function Dashboard() {
 
       {/* DRINKS */}
       <section className="relative overflow-hidden border-t border-white/5 py-24 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/47159/47159-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/47159/47159-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-12">
@@ -87,9 +84,7 @@ export default function Dashboard() {
 
       {/* CTA */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/47191/47191-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/47191/47191-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center text-center gap-8">
           <Flame size={32} className="text-amber-400 fill-amber-400" />

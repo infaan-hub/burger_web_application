@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFoods, getDrinks, getIngredients, getAuth } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 const iconMap = { Beef, Wheat, Sparkles, Cherry, Coffee, CupSoda, Drumstick, Croissant, Droplets, Sandwich, Cookie, Flame }
 
 function CookieConsent() {
@@ -97,9 +98,7 @@ export default function Home() {
       <CookieConsent />
       {/* ─── HERO ─── */}
       <section className="relative min-h-screen flex items-center overflow-hidden bg-dark">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 pt-24 pb-20">
@@ -135,9 +134,7 @@ export default function Home() {
 
       {/* ─── SECTION 1 — SHOWCASE ─── */}
       <section className="relative overflow-hidden py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/46660/46660-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/46660/46660-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
@@ -167,9 +164,7 @@ export default function Home() {
 
       {/* ─── DRINKS ─── */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
@@ -199,9 +194,7 @@ export default function Home() {
 
       {/* ─── SECTION 2 — INGREDIENTS ─── */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/47159/47159-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/47159/47159-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
           <span className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase">Quality First</span>
@@ -228,9 +221,7 @@ export default function Home() {
 
       {/* ─── SECTION 3 — STORY ─── */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/22921/22921-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/22921/22921-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -255,9 +246,7 @@ export default function Home() {
 
       {/* ─── SECTION 4 — CRAFT ─── */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/14010/14010-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/14010/14010-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center text-center">
           <span className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase">The Process</span>
@@ -280,9 +269,7 @@ export default function Home() {
 
       {/* ─── SECTION 5 — CTA ─── */}
       <section className="relative overflow-hidden border-t border-white/5 py-32 px-6 md:px-8">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="https://assets.mixkit.co/videos/47191/47191-720.mp4" type="video/mp4" />
-        </video>
+        <BackgroundVideo src="https://assets.mixkit.co/videos/47191/47191-720.mp4" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/85" />
 
         <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center text-center gap-8">

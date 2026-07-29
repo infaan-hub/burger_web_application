@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, MapPin, Phone, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { submitContact } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 const contactInfo = [
   { icon: MapPin, label: 'Address', value: 'Vuga, Stone Town, Zanzibar' },
   { icon: Phone, label: 'Phone', value: '+255711252758' },
@@ -20,9 +21,7 @@ export default function Contact() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-dark overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark" />
 
       <div className="relative z-10 w-full max-w-lg mx-auto px-6">

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMenu, getAuth } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function MenuList() {
   const navigate = useNavigate()
   const auth = getAuth()
@@ -21,9 +22,7 @@ export default function MenuList() {
 
   return (
     <div className="relative min-h-screen bg-black text-white pt-24 pb-16 overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-8">

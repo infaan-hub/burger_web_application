@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag, Trash2, CheckCircle } from 'lucide-react'
 import { getAllOrders, getAuth, updateOrderStatus, deleteOrder } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 const STATUSES = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled', 'order_complete']
 
 export default function AdminOrders() {
@@ -39,9 +40,7 @@ export default function AdminOrders() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
       <div className="relative z-10 pt-24 px-6 md:px-8 max-w-5xl mx-auto text-white">
       <div className="flex items-center gap-3 mb-8">

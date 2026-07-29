@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Users, Beef, MessageSquare, GlassWater, Pencil, Trash2, X, Check, Upload } from 'lucide-react'
 import { getAdminDashboard, getAuth, adminAddFood, adminAddDrink, adminCreateUser, getAdminMenuItems, updateMenuItem, deleteMenuItem, uploadImage } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const [data, setData] = useState(null)
@@ -110,9 +111,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/75 to-black/85" />
       <div className="relative z-10 pt-24 px-6 md:px-8 max-w-7xl mx-auto pb-16 text-white">
       <h2 className="text-3xl font-bold mb-2">Welcome, {auth?.user?.username}</h2>

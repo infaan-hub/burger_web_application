@@ -3,6 +3,7 @@ import { ArrowLeft, LogIn } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { login, saveAuth } from '../api'
 
+import BackgroundVideo from '../components/BackgroundVideo'
 export default function Login() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
@@ -27,9 +28,7 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-dark overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-        <source src="https://assets.mixkit.co/videos/48323/48323-720.mp4" type="video/mp4" />
-      </video>
+      <BackgroundVideo src="https://assets.mixkit.co/videos/48323/48323-720.mp4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark" />
 
       <div className="relative z-10 w-full max-w-md mx-auto px-6">
