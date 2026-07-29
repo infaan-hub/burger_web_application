@@ -18,6 +18,7 @@ import AdminMessages from './pages/AdminMessages'
 import AdminOrders from './pages/AdminOrders'
 import AdminMenuList from './pages/AdminMenuList'
 import AdminUsers from './pages/AdminUsers'
+import NotFound from './pages/NotFound'
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -53,6 +54,7 @@ function App() {
         <Route path="/admin/menu-list" element={<Layout><AdminMenuList /></Layout>} />
         <Route path="/admin/users" element={<Layout><AdminUsers /></Layout>} />
         <Route path="/admin/settings" element={<Layout><Settings /></Layout>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )

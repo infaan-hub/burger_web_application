@@ -106,9 +106,14 @@ export default function Login() {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-          <button type="button" onClick={() => navigate('/forgot-password')} className="text-white/40 hover:text-amber-400 text-xs uppercase tracking-widest transition-colors cursor-pointer text-center">
-            Forgot Password?
-          </button>
+          <div className="flex items-center justify-between">
+            <button type="button" onClick={() => navigate('/register')} className="text-white/40 hover:text-amber-400 text-xs uppercase tracking-widest transition-colors cursor-pointer">
+              Sign up
+            </button>
+            <button type="button" onClick={() => navigate('/forgot-password')} className="text-white/40 hover:text-amber-400 text-xs uppercase tracking-widest transition-colors cursor-pointer">
+              Forgot Password?
+            </button>
+          </div>
         </form>
         <div className="relative flex items-center gap-3 py-4">
           <span className="flex-1 h-px bg-white/10" />
