@@ -7,3 +7,5 @@ psycopg2-binary>=2.9,<3.0
 gunicorn>=23.0,<24.0
 python-dotenv>=1.0,<2.0
 whitenoise>=6.9,<7.0
+google-auth>=2.0,<3.0
+requests>=2.0,<3.0

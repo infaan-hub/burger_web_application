@@ -17,6 +17,7 @@ urlpatterns = [
     path('auth/change-password/', views.change_password, name='change-password'),
     path('auth/forgot-password/', views.forgot_password, name='forgot-password'),
     path('auth/reset-password/', views.reset_password, name='reset-password'),
+    path('auth/google/', views.google_login, name='google-login'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('admin/login/', views.admin_login, name='admin-login'),
     path('admin/dashboard/', views.admin_dashboard, name='admin-dashboard'),

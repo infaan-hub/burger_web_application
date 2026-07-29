@@ -118,6 +118,60 @@ def contact_messages(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+def google_login(request):
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as google_requests
+    from django.conf import settings
+
+    credential = request.data.get('credential') or request.data.get('id_token')
+    if not credential:
+        return Response({'error': 'credential or id_token required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        info = id_token.verify_oauth2_token(credential, google_requests.Request(), settings.GOOGLE_CLIENT_ID)
+    except Exception as e:
+        return Response({'error': f'Invalid token: {e}'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    email = info.get('email', '')
+    google_sub = info.get('sub', '')
+    name = info.get('name', '')
+    picture = info.get('picture', '')
+
+    username = email.split('@')[0] if email else f'google_{google_sub[:12]}'
+
+    user = None
+    if email:
+        user = User.objects.filter(email=email).first()
+    if not user:
+        user = User.objects.filter(username=username).first()
+    if not user:
+        username = username or f'user_{google_sub[:8]}'
+        base = username
+        i = 1
+        while User.objects.filter(username=username).exists():
+            username = f'{base}{i}'
+            i += 1
+        user = User.objects.create_user(username=username, email=email)
+        from .models import UserProfile
+        UserProfile.objects.create(user=user, display_name=name, avatar_url=picture)
+
+    tokens = get_tokens_for_user(user)
+    prof = getattr(user, 'profile', None)
+    return Response({
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'avatar_url': prof.avatar_url if prof else '',
+            'display_name': prof.display_name if prof else '',
+            'is_staff': user.is_staff,
+        },
+        'tokens': tokens,
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
