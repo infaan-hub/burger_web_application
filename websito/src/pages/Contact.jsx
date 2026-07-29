@@ -1,14 +1,22 @@
-import { ArrowLeft, Mail, MapPin, Phone } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowLeft, Mail, MapPin, Phone, CheckCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { submitContact } from '../api'
 
 const contactInfo = [
-  { icon: MapPin, label: 'Address', value: '123 Burger Lane, Foodville, FC 90210' },
-  { icon: Phone, label: 'Phone', value: '+1 (555) 123-4567' },
-  { icon: Mail, label: 'Email', value: 'hello@bitecraft.com' },
+  { icon: MapPin, label: 'Address', value: 'Vuga, Stone Town, Zanzibar' },
+  { icon: Phone, label: 'Phone', value: '+255711252758' },
+  { icon: Mail, label: 'Email', value: 'infaanhameed@gmail.com' },
 ]
 
 export default function Contact() {
   const navigate = useNavigate()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
+  const [done, setDone] = useState(false)
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-dark overflow-hidden">
@@ -43,26 +51,42 @@ export default function Contact() {
           ))}
         </div>
 
-        <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+        {done ? (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <CheckCircle size={48} className="text-green-400" />
+            <p className="text-white text-lg font-semibold">Message sent successfully!</p>
+            <button onClick={() => navigate('/')} className="px-8 py-3 bg-amber-400 text-black font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-amber-300 transition-colors cursor-pointer">Back to Home</button>
+          </div>
+        ) : (
+        <form className="flex flex-col gap-4" onSubmit={async (e) => {
+          e.preventDefault(); setError(''); setSending(true)
+          try {
+            await submitContact(name, email, message)
+            setDone(true)
+          } catch (err) {
+            setError(err.message || 'Failed to send message')
+          } finally {
+            setSending(false)
+          }
+        }}>
           <input
-            type="text"
-            placeholder="Your Name"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors"
+            type="text" placeholder="Your Name" value={name} onChange={e => setName(e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required
           />
           <input
-            type="email"
-            placeholder="Your Email"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors"
+            type="email" placeholder="Your Email" value={email} onChange={e => setEmail(e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required
           />
           <textarea
-            rows={4}
-            placeholder="Your Message"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors resize-none"
+            rows={4} placeholder="Your Message" value={message} onChange={e => setMessage(e.target.value)}
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors resize-none" required
           />
-          <button className="w-full py-3.5 bg-amber-400 text-black font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-amber-300 transition-colors cursor-pointer">
-            Send Message
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <button disabled={sending} className="w-full py-3.5 bg-amber-400 text-black font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-amber-300 transition-colors cursor-pointer disabled:opacity-50">
+            {sending ? 'Sending...' : 'Send Message'}
           </button>
         </form>
+        )}
       </div>
     </div>
   )

@@ -2,24 +2,22 @@ name: Keepalive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/4 * * * *"
   workflow_dispatch:
 
 jobs:
-  ping:
-    name: Ping Supabase & Render
+  keepalive:
+    name: Keep Neon + Render Alive
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase Database
-        run: |
-          curl -s --max-time 30 "${{ secrets.SUPABASE_URL }}/rest/v1/" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" || true
-
-      - name: Ping Backend (Render)
+      - name: Ping Backend (wakes Neon DB + keeps Render warm)
         run: |
           curl -s --max-time 30 "https://burgersupreme.onrender.com/api/health/" || true
 
-      - name: Ping Frontend (Vercel)
+      - name: Ping Frontend (keeps Vercel warm)
         run: |
           curl -s --max-time 30 "https://infaanburgersupreme.vercel.app/" || true
+
+      - name: Direct DB keepalive (if backend is cold)
+        run: |
+          curl -s --max-time 30 "https://burgersupreme.onrender.com/api/menu/" || true

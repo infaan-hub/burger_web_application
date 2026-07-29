@@ -16,7 +16,7 @@ services:
       - key: ALLOWED_HOSTS
         value: ".onrender.com,burgersupreme.onrender.com,localhost,127.0.0.1"
       - key: DATABASE_URL
-        value: "postgresql://postgres:Infaan%402005%40@db.ejqpnxagsyuxeariycif.supabase.co:6543/postgres?sslmode=require"
+        value: "postgresql://neondb_owner:npg_lq2VJG8OPUrp@ep-rough-water-axtg7y3v-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
       - key: CORS_ALLOW_ALL_ORIGINS
         value: "False"
       - key: CORS_ALLOWED_ORIGINS
