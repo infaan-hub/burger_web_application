@@ -27,17 +27,19 @@ export default function Login() {
     }
   }
 
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
   useEffect(() => {
-    if (!window.google?.accounts || !btnRef.current) return
+    if (!window.google?.accounts || !btnRef.current || !clientId) return
     window.google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      client_id: clientId,
       callback: handleGoogleResponse,
     })
     window.google.accounts.id.renderButton(btnRef.current, {
       type: 'standard', shape: 'pill', theme: 'outline',
-      text: 'continue_with', size: 'large', width: '100%',
+      text: 'continue_with', size: 'large',
     })
-  }, [])
+  }, [clientId])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -113,7 +115,11 @@ export default function Login() {
           <span className="text-white/30 text-xs uppercase tracking-widest">or</span>
           <span className="flex-1 h-px bg-white/10" />
         </div>
-        <div ref={btnRef} className="w-full flex justify-center" />
+        {!clientId ? (
+          <p className="text-red-400 text-xs text-center">Google login unavailable: VITE_GOOGLE_CLIENT_ID not set</p>
+        ) : (
+          <div ref={btnRef} className="w-full flex justify-center" />
+        )}
         {googleLoading && <p className="text-amber-400 text-sm text-center mt-2">Signing in with Google...</p>}
       </div>
     </div>
