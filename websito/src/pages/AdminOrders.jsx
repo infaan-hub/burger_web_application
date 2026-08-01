@@ -103,7 +103,10 @@ export default function AdminOrders() {
                   <div key={oi.id} className="flex items-center gap-3 py-2 border-t border-white/5">
                     <div className="w-10 h-10 rounded-lg bg-cover bg-center shrink-0" style={{ backgroundImage: `url('${oi.item_image}')` }} />
                     <span className="flex-1 text-white/70">{oi.item_title} x{oi.quantity}</span>
-                    <span className="text-amber-400 font-bold">${parseFloat(oi.price).toFixed(2)}</span>
+                    <span className="text-amber-400 font-bold text-right">
+                      <span className="block">TSh {Number(oi.price_tsh || 0).toLocaleString()}</span>
+                      <span className="block text-white/40 text-xs">${parseFloat(oi.price).toFixed(2)}</span>
+                    </span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
@@ -112,7 +115,7 @@ export default function AdminOrders() {
                     <p>{order.phone && `📞 ${order.phone}`}</p>
                     {order.notes && <p>📝 {order.notes}</p>}
                   </div>
-                  <span className="text-lg font-bold text-amber-400">Total: ${parseFloat(order.total).toFixed(2)}</span>
+                  <span className="text-lg font-bold text-amber-400">Total: TSh {Number(order.total_tsh || 0).toLocaleString()} (${parseFloat(order.total).toFixed(2)})</span>
                 </div>
               </div>
             ))}

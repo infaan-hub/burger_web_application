@@ -49,21 +49,29 @@ class LoginSerializer(serializers.Serializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     item_title = serializers.CharField(source='item.title', read_only=True)
     item_image = serializers.URLField(source='item.image_url', read_only=True)
+    price_tsh = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'item', 'item_title', 'item_image', 'quantity', 'price']
+        fields = ['id', 'item', 'item_title', 'item_image', 'quantity', 'price', 'price_tsh']
+
+    def get_price_tsh(self, obj):
+        return obj.item.price_tsh * obj.quantity
 
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, read_only=True)
     items_data = serializers.ListField(write_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
+    total_tsh = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'total', 'status', 'delivery_address', 'delivery_lat', 'delivery_lng', 'phone', 'notes', 'created_at', 'order_items', 'items_data', 'username']
-        read_only_fields = ['id', 'total', 'status', 'created_at']
+        fields = ['id', 'total', 'total_tsh', 'status', 'delivery_address', 'delivery_lat', 'delivery_lng', 'phone', 'notes', 'created_at', 'order_items', 'items_data', 'username']
+        read_only_fields = ['id', 'total', 'total_tsh', 'status', 'created_at']
+
+    def get_total_tsh(self, obj):
+        return sum(oi.item.price_tsh * oi.quantity for oi in obj.order_items.all())
 
     def validate_items_data(self, value):
         if not value:
