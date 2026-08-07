@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /reset-password
+
+Sitemap: https://infaanburgersupreme.vercel.app/sitemap.xml
