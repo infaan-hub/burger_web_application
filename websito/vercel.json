@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/", "fs": true }
+    { "source": "/(.*)", "destination": "/" }
   ],
   "env": {
     "VITE_API_URL": "https://burgersupreme.onrender.com/api"
