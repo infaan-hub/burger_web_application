@@ -19,7 +19,18 @@ async function request(method, path, body) {
 
   const res = await fetch(`${API}${path}`, opts)
   const data = await res.json()
-  if (!res.ok) throw new Error(data.error || JSON.stringify(data))
+  if (!res.ok) {
+    let msg = data.error || data.detail || ''
+    if (typeof msg === 'object' && msg.detail) msg = msg.detail
+    if (!msg) {
+      if (res.status === 401) msg = 'Session expired. Please login again'
+      else if (res.status === 403) msg = 'You do not have permission to do this'
+      else if (res.status === 404) msg = 'Not found'
+      else if (res.status >= 500) msg = 'Something went wrong. Please try again'
+      else msg = 'Something went wrong'
+    }
+    throw new Error(msg)
+  }
   return data
 }
 

@@ -151,7 +151,7 @@ def google_login(request):
     try:
         info = id_token.verify_oauth2_token(credential, google_requests.Request(), settings.GOOGLE_CLIENT_ID)
     except Exception as e:
-        return Response({'error': f'Invalid token: {e}'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Google login failed. Please try again'}, status=status.HTTP_401_UNAUTHORIZED)
 
     email = info.get('email', '')
     google_sub = info.get('sub', '')
@@ -234,7 +234,7 @@ def login(request):
             },
             'tokens': tokens,
         })
-    return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET'])
@@ -348,7 +348,7 @@ def admin_login(request):
             },
             'tokens': tokens,
         })
-    return Response({'error': 'Invalid admin credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['GET'])
