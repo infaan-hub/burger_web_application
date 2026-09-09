@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
@@ -19,6 +19,11 @@ import AdminOrders from './pages/AdminOrders'
 import AdminMenuList from './pages/AdminMenuList'
 import AdminUsers from './pages/AdminUsers'
 import NotFound from './pages/NotFound'
+import ConnectionIndicator from './components/ConnectionIndicator'
+import PushPermissionBanner from './components/PushPermissionBanner'
+import { connect, disconnect, addEventListeners } from './services/websocket'
+import { initPush, playNotificationSound } from './services/push'
+import { getAuth } from './api'
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -33,8 +38,25 @@ function Layout({ children }) {
 }
 
 function App() {
+  useEffect(() => {
+    if (getAuth()) {
+      connect()
+      initPush()
+      const unsubs = [
+        addEventListeners('NEW_ORDER', () => playNotificationSound()),
+        addEventListeners('ORDER_STATUS_CHANGED', () => playNotificationSound()),
+        addEventListeners('NEW_USER', () => playNotificationSound()),
+        addEventListeners('CONTACT_MESSAGE', () => playNotificationSound()),
+      ]
+      return () => { disconnect(); unsubs.forEach(u => u()) }
+    }
+    return () => disconnect()
+  }, [])
+
   return (
     <BrowserRouter>
+      <ConnectionIndicator />
+      <PushPermissionBanner />
       <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/login" element={<Login />} />

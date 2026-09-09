@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import MenuItem, Ingredient, ContactMessage, Order, PasswordResetToken
+from .models import MenuItem, Ingredient, ContactMessage, Order, PasswordResetToken, PushSubscription, Notification
 from .serializers import (
     MenuItemSerializer,
     IngredientSerializer,
@@ -19,6 +19,18 @@ from .serializers import (
     ChangePasswordSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
+)
+from .events import (
+    emit_new_order,
+    emit_order_status_changed,
+    emit_order_deleted,
+    emit_new_user,
+    emit_user_updated,
+    emit_user_deleted,
+    emit_menu_item_added,
+    emit_menu_item_updated,
+    emit_menu_item_deleted,
+    emit_contact_message,
 )
 
 
@@ -90,7 +102,8 @@ def ingredient_list(request):
 def contact_submit(request):
     serializer = ContactMessageSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        msg = serializer.save()
+        emit_contact_message(msg)
         return Response({'message': 'Message sent successfully'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -177,6 +190,7 @@ def register(request):
     if serializer.is_valid():
         user = serializer.save()
         tokens = get_tokens_for_user(user)
+        emit_new_user(user)
         return Response({
             'user': {'id': user.id, 'username': user.username},
             'tokens': tokens,
@@ -360,7 +374,8 @@ def admin_add_food(request):
     data['category'] = 'food'
     serializer = MenuItemSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
+        item = serializer.save()
+        emit_menu_item_added(item)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -376,7 +391,8 @@ def admin_add_drink(request):
     data['category'] = 'drink'
     serializer = MenuItemSerializer(data=data)
     if serializer.is_valid():
-        serializer.save()
+        item = serializer.save()
+        emit_menu_item_added(item)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -386,7 +402,8 @@ def admin_add_drink(request):
 def admin_create_user(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        user = serializer.save()
+        emit_new_user(user)
         return Response({'message': 'User created successfully'}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -416,12 +433,14 @@ def admin_menu_item_detail(request, item_id):
     if request.method == 'PUT':
         serializer = MenuItemSerializer(item, data=_clean_menu_data(request.data), partial=True)
         if serializer.is_valid():
-            serializer.save()
+            updated = serializer.save()
+            emit_menu_item_updated(updated)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
         item.delete()
+        emit_menu_item_deleted(item_id)
         return Response({'message': 'Item deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -470,12 +489,15 @@ def admin_user_detail(request, user_id):
         u.is_active = request.data.get('is_active', u.is_active)
         u.is_staff = request.data.get('is_staff', u.is_staff)
         u.save()
+        emit_user_updated(u)
         return Response({'message': 'User updated'})
 
     if request.method == 'DELETE':
         if u == request.user:
             return Response({'error': 'Cannot delete yourself'}, status=400)
+        uid = u.id
         u.delete()
+        emit_user_deleted(uid)
         return Response({'message': 'User deleted'})
 
 
@@ -513,6 +535,7 @@ def place_order(request):
     if serializer.is_valid():
         order = serializer.save(user=request.user)
         out = OrderSerializer(order)
+        emit_new_order(order, request.user)
         return Response(out.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -553,12 +576,14 @@ def order_detail(request, order_id):
                 return Response({'error': f'Invalid status. Must be one of: {", ".join(valid)}'}, status=400)
             order.status = status_val
             order.save()
+            emit_order_status_changed(order)
             serializer = OrderSerializer(order)
             return Response(serializer.data)
         return Response({'error': 'No status provided'}, status=400)
 
     if request.method == 'DELETE':
         order.delete()
+        emit_order_deleted(order)
         return Response({'message': 'Order deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -575,5 +600,90 @@ def cancel_order(request, order_id):
 
     order.status = 'cancelled'
     order.save()
+    emit_order_status_changed(order)
     serializer = OrderSerializer(order)
     return Response(serializer.data)
+
+
+# ─── Push Notifications ───
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def vapid_public_key(request):
+    from django.conf import settings
+    key = getattr(settings, 'VAPID_PUBLIC_KEY', '')
+    return Response({'public_key': key})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def push_subscribe(request):
+    endpoint = request.data.get('endpoint')
+    p256dh = request.data.get('p256dh')
+    auth = request.data.get('auth')
+    if not endpoint or not p256dh or not auth:
+        return Response({'error': 'endpoint, p256dh, and auth are required'}, status=400)
+    user_agent = request.META.get('HTTP_USER_AGENT', '')[:300]
+    sub, created = PushSubscription.objects.update_or_create(
+        user=request.user,
+        endpoint=endpoint,
+        defaults={
+            'p256dh': p256dh,
+            'auth': auth,
+            'user_agent': user_agent,
+            'active': True,
+        },
+    )
+    return Response({'message': 'Subscription saved', 'id': sub.id}, status=status.HTTP_201_CREATED if created else 200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def push_unsubscribe(request):
+    endpoint = request.data.get('endpoint')
+    if endpoint:
+        PushSubscription.objects.filter(user=request.user, endpoint=endpoint).update(active=False)
+    return Response({'message': 'Unsubscribed'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notification_list(request):
+    notifs = Notification.objects.filter(user=request.user)[:50]
+    data = [{
+        'id': n.id,
+        'title': n.title,
+        'message': n.message,
+        'type': n.notification_type,
+        'link': n.link,
+        'read': n.read,
+        'created_at': n.created_at.isoformat(),
+    } for n in notifs]
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def notification_unread_count(request):
+    count = Notification.objects.filter(user=request.user, read=False).count()
+    return Response({'unread_count': count})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def notification_mark_read(request):
+    notif_id = request.data.get('id')
+    if notif_id:
+        Notification.objects.filter(id=notif_id, user=request.user).update(read=True)
+    else:
+        Notification.objects.filter(user=request.user, read=False).update(read=True)
+    return Response({'message': 'Marked as read'})
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def notification_delete(request):
+    notif_id = request.query_params.get('id')
+    if notif_id:
+        Notification.objects.filter(id=notif_id, user=request.user).delete()
+    return Response({'message': 'Deleted'})

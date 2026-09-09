@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-kk5$b=d8kn!)nf@5e3qqcr%&#9@j*^_6#cjq0g%8$601a7)kl!')
 
@@ -12,6 +14,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -20,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'channels',
     'api',
 ]
 
@@ -53,6 +57,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -142,3 +147,35 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+# ─── Channels / WebSocket ───
+REDIS_URL = os.environ.get('REDIS_URL', '')
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+
+# ─── VAPID / Web Push ───
+def _clean_pem(val):
+    if not val:
+        return ''
+    val = val.replace('\\n', '\n')
+    val = val.replace('\\', '')
+    if '-----BEGIN' in val and val.count('\n') < 3:
+        val = val.replace('-----BEGIN', '-----BEGIN\n').replace('-----END', '\n-----END')
+    return val.strip()
+
+VAPID_PRIVATE_KEY = _clean_pem(os.environ.get('VAPID_PRIVATE_KEY', ''))
+VAPID_PUBLIC_KEY = _clean_pem(os.environ.get('VAPID_PUBLIC_KEY', ''))
+VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL', 'mailto:admin@burgersupreme.com')

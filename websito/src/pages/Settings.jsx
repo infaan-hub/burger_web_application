@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Settings as SettingsIcon, Save, Key, User, Mail, Image } from 'lucide-react'
+import { Settings as SettingsIcon, Save, Key, User, Mail, Image, Bell, BellOff } from 'lucide-react'
 import { getProfile, updateProfile, changePassword, getAuth } from '../api'
+import { isPushSupported, getPermissionState, requestPermission, initPush, subscribe, unsubscribe } from '../services/push'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -11,10 +12,15 @@ export default function Settings() {
   const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
   const [saving, setSaving] = useState(false)
+  const [pushStatus, setPushStatus] = useState('unsupported')
+  const [pushLoading, setPushLoading] = useState(false)
 
   useEffect(() => {
     if (!auth) { navigate('/login'); return }
     getProfile().then(setProfile).catch(() => {})
+    if (isPushSupported()) {
+      getPermissionState().then(setPushStatus)
+    }
   }, [])
 
   const handleProfile = async (e) => {
@@ -37,6 +43,33 @@ export default function Settings() {
     } catch (e) { setErr(e.message) }
   }
 
+  const handleEnablePush = async () => {
+    setPushLoading(true)
+    try {
+      const result = await requestPermission()
+      if (result === 'granted') {
+        await initPush()
+        await subscribe()
+        setPushStatus('granted')
+        setMsg('Notifications enabled')
+      } else {
+        setPushStatus(result)
+        if (result === 'denied') setErr('Notification permission was denied')
+      }
+    } catch (e) { setErr(e.message) }
+    finally { setPushLoading(false) }
+  }
+
+  const handleDisablePush = async () => {
+    setPushLoading(true)
+    try {
+      await unsubscribe()
+      setPushStatus('denied')
+      setMsg('Notifications disabled')
+    } catch (e) { setErr(e.message) }
+    finally { setPushLoading(false) }
+  }
+
   const inputClass = 'w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors text-sm'
 
   return (
@@ -54,6 +87,46 @@ export default function Settings() {
 
       {err && <p className="text-red-400 mb-4 text-sm">{err}</p>}
       {msg && <p className="text-green-400 mb-4 text-sm">{msg}</p>}
+
+      {/* Notifications */}
+      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 mb-6">
+        <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Bell size={18} className="text-amber-400" /> Notifications</h2>
+        {!isPushSupported() ? (
+          <p className="text-white/40 text-sm">Push notifications are not supported in this browser.</p>
+        ) : pushStatus === 'granted' ? (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-400 text-sm font-semibold">Notifications enabled</p>
+              <p className="text-white/40 text-xs mt-1">You will receive booking updates and alerts.</p>
+            </div>
+            <button
+              onClick={handleDisablePush}
+              disabled={pushLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 text-sm rounded-xl hover:bg-red-500/30 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <BellOff size={14} />
+              Disable
+            </button>
+          </div>
+        ) : pushStatus === 'denied' ? (
+          <p className="text-white/40 text-sm">Notifications were blocked. Please enable them in your browser settings.</p>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/70 text-sm">Notifications are off</p>
+              <p className="text-white/40 text-xs mt-1">Enable to receive real-time booking updates.</p>
+            </div>
+            <button
+              onClick={handleEnablePush}
+              disabled={pushLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-400 text-black text-sm font-bold rounded-xl hover:bg-amber-300 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Bell size={14} />
+              {pushLoading ? 'Enabling...' : 'Enable'}
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Profile */}
       <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 mb-6">

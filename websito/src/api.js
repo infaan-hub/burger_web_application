@@ -190,3 +190,19 @@ export function getAuth() {
   const stored = localStorage.getItem('auth')
   return stored ? JSON.parse(stored) : null
 }
+
+export function getNotifications() {
+  return get('/notifications/')
+}
+
+export function getUnreadCount() {
+  return get('/notifications/unread/')
+}
+
+export function markNotificationsRead(id) {
+  return post('/notifications/read/', id ? { id } : {})
+}
+
+export function deleteNotification(id) {
+  return del(`/notifications/delete/?id=${id}`)
+}

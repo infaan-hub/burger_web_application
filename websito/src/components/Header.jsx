@@ -1,4 +1,5 @@
 import { Menu, X, Flame } from 'lucide-react'
+import NotificationCenter from './NotificationCenter'
 
 export default function Header({ isOpen, onToggle }) {
   return (
@@ -9,13 +10,16 @@ export default function Header({ isOpen, onToggle }) {
           Burger Supreme
         </a>
 
-        <button
-          onClick={onToggle}
-          className="relative z-[60] flex items-center justify-center w-10 h-10 text-white"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationCenter />
+          <button
+            onClick={onToggle}
+            className="relative z-[60] flex items-center justify-center w-10 h-10 text-white"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
     </header>
   )

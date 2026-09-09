@@ -1,6 +1,7 @@
 import { X, LogIn, UserPlus, Mail, LogOut, LayoutDashboard, ShoppingBag, List, MessageSquare, ClipboardList, Settings, Beef, ChefHat, Users, House } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, logout } from '../api'
+import { disconnect } from '../services/websocket'
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function Sidebar({ isOpen, onClose }) {
   }
 
   const handleLogout = () => {
+    disconnect()
     logout()
     onClose()
     navigate('/')

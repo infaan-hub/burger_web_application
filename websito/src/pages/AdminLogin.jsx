@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { ArrowLeft, Shield } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { adminLogin, saveAuth } from '../api'
+import { connect } from '../services/websocket'
+import { initPush } from '../services/push'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminLogin() {
@@ -18,6 +20,8 @@ export default function AdminLogin() {
     try {
       const data = await adminLogin(username, password)
       saveAuth(data)
+      connect()
+      initPush()
       navigate('/admin/dashboard')
     } catch (err) {
       setError(err.message || 'Admin login failed')

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Minus, Plus, MapPin, Navigation, CheckCircle, XCircle, ShoppingBag } from 'lucide-react'
 import { getMenuItem, placeOrder, getProfile, getAuth, getMyOrders, cancelOrder } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function Order() {
@@ -24,6 +25,7 @@ export default function Order() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(null)
+  const [notifications, setNotifications] = useState([])
 
   const fetchOrders = async () => {
     try {
@@ -53,6 +55,22 @@ export default function Order() {
       setLoading(false)
     })
   }, [id])
+
+  const addNotification = useCallback((title, body) => {
+    const nid = Date.now()
+    setNotifications(prev => [{ id: nid, title, body }, ...prev].slice(0, 5))
+    setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== nid)), 8000)
+  }, [])
+
+  useWSEvent('ORDER_STATUS_CHANGED', useCallback((d) => {
+    addNotification('Order Update', `Order #${d.order_id} is now ${d.status}`)
+    fetchOrders()
+  }, [addNotification]))
+
+  useWSEvent('ORDER_DELETED', useCallback((d) => {
+    addNotification('Order Removed', `Order #${d.order_id} was removed`)
+    fetchOrders()
+  }, [addNotification]))
 
   const handleCancel = async (orderId) => {
     setCancelling(orderId)
@@ -115,6 +133,17 @@ export default function Order() {
             <ShoppingBag size={24} className="text-amber-400" />
             <h1 className="text-3xl font-bold text-white">My Orders</h1>
           </div>
+
+          {notifications.length > 0 && (
+            <div className="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-xs">
+              {notifications.map(n => (
+                <div key={n.id} className="px-4 py-3 rounded-xl bg-amber-400/10 border border-amber-400/20 text-sm backdrop-blur-sm animate-[slideIn_0.3s_ease-out]">
+                  <p className="text-amber-400 font-semibold text-xs uppercase tracking-wider">{n.title}</p>
+                  <p className="text-white/70 text-xs mt-0.5">{n.body}</p>
+                </div>
+              ))}
+            </div>
+          )}
           {orders.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-white/30 mb-6">No orders yet</p>

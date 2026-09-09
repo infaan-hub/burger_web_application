@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users, Trash2, Ban, CheckCircle, XCircle, Shield, ShieldOff } from 'lucide-react'
 import { getAdminUsers, deleteAdminUser, updateAdminUser, getAuth } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 export default function AdminUsers() {
   const navigate = useNavigate()
@@ -9,12 +10,26 @@ export default function AdminUsers() {
   const [msg, setMsg] = useState('')
   const [error, setError] = useState('')
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!getAuth()) { navigate('/admin/login'); return }
-    load()
-  }, [])
+    getAdminUsers().then(setUsers).catch(() => navigate('/admin/login'))
+  }, [navigate])
 
-  const load = () => getAdminUsers().then(setUsers).catch(() => navigate('/admin/login'))
+  useEffect(load, [load])
+
+  useWSEvent('NEW_USER', useCallback((d) => {
+    setMsg(`New user registered: ${d.username}`)
+    setTimeout(() => setMsg(''), 3000)
+    load()
+  }, [load]))
+
+  useWSEvent('USER_UPDATED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('USER_DELETED', useCallback(() => {
+    load()
+  }, [load]))
 
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
 

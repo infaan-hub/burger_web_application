@@ -105,3 +105,40 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity}x {self.item.title}'
+
+
+class PushSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='push_subscriptions')
+    endpoint = models.URLField(max_length=500)
+    p256dh = models.CharField(max_length=200)
+    auth = models.CharField(max_length=100)
+    user_agent = models.CharField(max_length=300, blank=True, default='')
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'endpoint']
+
+    def __str__(self):
+        return f'PushSub #{self.id} - {self.user.username}'
+
+
+class Notification(models.Model):
+    TYPE_CHOICES = [
+        ('order_update', 'Order Update'),
+        ('system', 'System'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=30, choices=TYPE_CHOICES, default='system')
+    link = models.CharField(max_length=300, blank=True, default='')
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.title} -> {self.user.username}'

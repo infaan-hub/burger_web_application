@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2, X, Check, Beef, GlassWater } from 'lucide-react'
 import { getAdminMenuItems, updateMenuItem, deleteMenuItem, getAuth } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminMenuList() {
@@ -11,12 +12,26 @@ export default function AdminMenuList() {
   const [form, setForm] = useState({})
   const [msg, setMsg] = useState('')
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!getAuth()) { navigate('/admin/login'); return }
-    load()
-  }, [])
+    getAdminMenuItems().then(setItems).catch(() => navigate('/admin/login'))
+  }, [navigate])
 
-  const load = () => getAdminMenuItems().then(setItems).catch(() => navigate('/admin/login'))
+  useEffect(load, [load])
+
+  useWSEvent('MENU_ITEM_ADDED', useCallback((d) => {
+    setMsg(`${d.title} added`)
+    setTimeout(() => setMsg(''), 3000)
+    load()
+  }, [load]))
+
+  useWSEvent('MENU_ITEM_UPDATED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('MENU_ITEM_DELETED', useCallback(() => {
+    load()
+  }, [load]))
 
   const startEdit = (item) => {
     setEditing(item.id)

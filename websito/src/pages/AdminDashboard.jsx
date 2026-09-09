@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Users, Beef, MessageSquare, GlassWater, Pencil, Trash2, X, Check, Upload } from 'lucide-react'
 import { getAdminDashboard, getAuth, adminAddFood, adminAddDrink, adminCreateUser, getAdminMenuItems, updateMenuItem, deleteMenuItem, uploadImage } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminDashboard() {
@@ -13,6 +14,7 @@ export default function AdminDashboard() {
   const [menuItems, setMenuItems] = useState([])
   const [editing, setEditing] = useState(null)
   const [editForm, setEditForm] = useState({})
+  const [notifications, setNotifications] = useState([])
 
   const [food, setFood] = useState({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
   const [drink, setDrink] = useState({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
@@ -20,15 +22,65 @@ export default function AdminDashboard() {
   const [uploadingFood, setUploadingFood] = useState(false)
   const [uploadingDrink, setUploadingDrink] = useState(false)
 
-  const load = () => {
+  const load = useCallback(() => {
     if (!auth) { navigate('/admin/login'); return }
     getAdminDashboard().then(setData).catch(() => navigate('/admin/login'))
     getAdminMenuItems().then(setMenuItems).catch(() => {})
-  }
+  }, [auth, navigate])
 
-  useEffect(load, [])
+  useEffect(load, [load])
 
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
+
+  const addNotification = (title, body) => {
+    const id = Date.now()
+    setNotifications(prev => [{ id, title, body, time: new Date() }, ...prev].slice(0, 20))
+    setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 8000)
+  }
+
+  useWSEvent('NEW_ORDER', useCallback((d) => {
+    addNotification('New Order', `Order #${d.order_id} by ${d.username}`)
+    load()
+  }, [load]))
+
+  useWSEvent('ORDER_STATUS_CHANGED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('ORDER_DELETED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('NEW_USER', useCallback((d) => {
+    addNotification('New User', `${d.username} registered`)
+    load()
+  }, [load]))
+
+  useWSEvent('USER_UPDATED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('USER_DELETED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('MENU_ITEM_ADDED', useCallback((d) => {
+    addNotification('Menu Updated', `${d.title} added`)
+    load()
+  }, [load]))
+
+  useWSEvent('MENU_ITEM_UPDATED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('MENU_ITEM_DELETED', useCallback(() => {
+    load()
+  }, [load]))
+
+  useWSEvent('CONTACT_MESSAGE', useCallback((d) => {
+    addNotification('New Message', `From ${d.name}`)
+    load()
+  }, [load]))
 
   const handleAddFood = async (e) => {
     e.preventDefault(); setError('')
@@ -119,6 +171,17 @@ export default function AdminDashboard() {
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
       {msg && <p className="text-green-400 mb-4">{msg}</p>}
+
+      {notifications.length > 0 && (
+        <div className="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-xs">
+          {notifications.map(n => (
+            <div key={n.id} className="px-4 py-3 rounded-xl bg-amber-400/10 border border-amber-400/20 text-sm backdrop-blur-sm animate-[slideIn_0.3s_ease-out]">
+              <p className="text-amber-400 font-semibold text-xs uppercase tracking-wider">{n.title}</p>
+              <p className="text-white/70 text-xs mt-0.5">{n.body}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {data && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">

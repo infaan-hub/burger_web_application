@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { ArrowLeft, LogIn } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { login, post, saveAuth } from '../api'
+import { connect } from '../services/websocket'
+import { initPush } from '../services/push'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function Login() {
@@ -19,6 +21,8 @@ export default function Login() {
     try {
       const data = await post('/auth/google/', { credential: response.credential })
       saveAuth(data)
+      connect()
+      initPush()
       navigate(data.user?.is_staff ? '/admin/dashboard' : '/dashboard')
     } catch (err) {
       setError(err.message || 'Google login failed')
@@ -48,6 +52,8 @@ export default function Login() {
     try {
       const data = await login(username, password)
       saveAuth(data)
+      connect()
+      initPush()
       navigate(data.user?.is_staff ? '/admin/dashboard' : '/dashboard')
     } catch (err) {
       setError(err.message || 'Login failed')

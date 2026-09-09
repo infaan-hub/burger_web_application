@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag, Trash2, CheckCircle } from 'lucide-react'
 import { getAllOrders, getAuth, updateOrderStatus, deleteOrder } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 const STATUSES = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled', 'order_complete']
@@ -10,11 +11,36 @@ export default function AdminOrders() {
   const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [updating, setUpdating] = useState(null)
+  const [notifications, setNotifications] = useState([])
 
-  useEffect(() => {
+  const load = useCallback(() => {
     if (!getAuth()) { navigate('/admin/login'); return }
     getAllOrders().then(setOrders).catch(() => navigate('/admin/login'))
-  }, [])
+  }, [navigate])
+
+  useEffect(load, [load])
+
+  const addNotification = (title, body) => {
+    const id = Date.now()
+    setNotifications(prev => [{ id, title, body, time: new Date() }, ...prev].slice(0, 20))
+    setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 8000)
+  }
+
+  useWSEvent('NEW_ORDER', useCallback((d) => {
+    addNotification('New Order', `Order #${d.order_id} by ${d.username}`)
+    load()
+  }, [load]))
+
+  useWSEvent('ORDER_STATUS_CHANGED', useCallback((d) => {
+    if (d.username) {
+      addNotification('Status Changed', `Order #${d.order_id} -> ${d.status}`)
+    }
+    load()
+  }, [load]))
+
+  useWSEvent('ORDER_DELETED', useCallback(() => {
+    load()
+  }, [load]))
 
   const handleStatusChange = async (orderId, newStatus) => {
     setUpdating(orderId)
@@ -47,6 +73,17 @@ export default function AdminOrders() {
         <ShoppingBag size={24} className="text-amber-400" />
         <h1 className="text-3xl font-bold">All Orders</h1>
       </div>
+
+      {notifications.length > 0 && (
+        <div className="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-xs">
+          {notifications.map(n => (
+            <div key={n.id} className="px-4 py-3 rounded-xl bg-amber-400/10 border border-amber-400/20 text-sm backdrop-blur-sm animate-[slideIn_0.3s_ease-out]">
+              <p className="text-amber-400 font-semibold text-xs uppercase tracking-wider">{n.title}</p>
+              <p className="text-white/70 text-xs mt-0.5">{n.body}</p>
+            </div>
+          ))}
+        </div>
+      )}
         {orders.length === 0 ? (
           <p className="text-white/30">No orders yet</p>
         ) : (

@@ -1,18 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare, Trash2 } from 'lucide-react'
 import { getContactMessages, getAuth, del } from '../api'
+import { useWSEvent } from '../hooks/useWebSocket'
 
 export default function AdminMessages() {
   const navigate = useNavigate()
   const [messages, setMessages] = useState([])
 
-  const load = () => {
+  const load = useCallback(() => {
     if (!getAuth()) { navigate('/admin/login'); return }
     getContactMessages().then(setMessages).catch(() => navigate('/admin/login'))
-  }
+  }, [navigate])
 
-  useEffect(load, [])
+  useEffect(load, [load])
+
+  useWSEvent('CONTACT_MESSAGE', useCallback(() => {
+    load()
+  }, [load]))
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this message?')) return

@@ -35,4 +35,11 @@ urlpatterns = [
     path('orders/all/', views.all_orders, name='all-orders'),
     path('orders/<int:order_id>/', views.order_detail, name='order-detail'),
     path('orders/<int:order_id>/cancel/', views.cancel_order, name='cancel-order'),
+    path('push/vapid-key/', views.vapid_public_key, name='vapid-public-key'),
+    path('push/subscribe/', views.push_subscribe, name='push-subscribe'),
+    path('push/unsubscribe/', views.push_unsubscribe, name='push-unsubscribe'),
+    path('notifications/', views.notification_list, name='notification-list'),
+    path('notifications/unread/', views.notification_unread_count, name='notification-unread'),
+    path('notifications/read/', views.notification_mark_read, name='notification-mark-read'),
+    path('notifications/delete/', views.notification_delete, name='notification-delete'),
 ]
