@@ -97,13 +97,18 @@ export default function Order() {
         const lngVal = pos.coords.longitude
         setLat(latVal)
         setLng(lngVal)
-        try {
-          const res = await fetch(`https://geocode.maps.co/reverse?lat=${latVal}&lon=${lngVal}&format=json`)
-          const data = await res.json()
-          if (data && data.display_name) {
-            setAddress(data.display_name)
-          }
-        } catch {}
+        const apis = [
+          `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latVal}&longitude=${lngVal}&count=1&language=en`,
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latVal}&lon=${lngVal}&zoom=18&addressdetails=1`,
+        ]
+        for (const url of apis) {
+          try {
+            const res = await fetch(url, { headers: { 'User-Agent': 'BurgerSupreme/1.0' } })
+            const data = await res.json()
+            if (data.display_name) { setAddress(data.display_name); break }
+            if (data.results && data.results[0]) { setAddress(data.results[0].name || data.results[0].formatted || data.results[0].display_name); break }
+          } catch { continue }
+        }
         setLocating(false)
       },
       () => { setError('Could not get location'); setLocating(false) },
