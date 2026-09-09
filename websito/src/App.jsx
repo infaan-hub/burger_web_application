@@ -19,7 +19,6 @@ import AdminOrders from './pages/AdminOrders'
 import AdminMenuList from './pages/AdminMenuList'
 import AdminUsers from './pages/AdminUsers'
 import NotFound from './pages/NotFound'
-import ConnectionIndicator from './components/ConnectionIndicator'
 import PushPermissionBanner from './components/PushPermissionBanner'
 import { connect, disconnect, addEventListeners } from './services/websocket'
 import { initPush, playNotificationSound } from './services/push'
@@ -57,7 +56,6 @@ function App() {
   return (
     <BrowserRouter>
       <ExchangeProvider>
-        <ConnectionIndicator />
         <PushPermissionBanner />
         <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
