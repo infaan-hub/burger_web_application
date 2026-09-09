@@ -39,18 +39,20 @@ function Layout({ children }) {
 
 function App() {
   useEffect(() => {
-    if (getAuth()) {
-      connect()
-      initPush()
-      const unsubs = [
-        addEventListeners('NEW_ORDER', () => playNotificationSound()),
-        addEventListeners('ORDER_STATUS_CHANGED', () => playNotificationSound()),
-        addEventListeners('NEW_USER', () => playNotificationSound()),
-        addEventListeners('CONTACT_MESSAGE', () => playNotificationSound()),
-      ]
-      return () => { disconnect(); unsubs.forEach(u => u()) }
-    }
-    return () => disconnect()
+    try {
+      if (getAuth()) {
+        connect()
+        initPush()
+        const unsubs = [
+          addEventListeners('NEW_ORDER', () => playNotificationSound()),
+          addEventListeners('ORDER_STATUS_CHANGED', () => playNotificationSound()),
+          addEventListeners('NEW_USER', () => playNotificationSound()),
+          addEventListeners('CONTACT_MESSAGE', () => playNotificationSound()),
+        ]
+        return () => { disconnect(); unsubs.forEach(u => u()) }
+      }
+    } catch {}
+    return () => { try { disconnect() } catch {} }
   }, [])
 
   return (
