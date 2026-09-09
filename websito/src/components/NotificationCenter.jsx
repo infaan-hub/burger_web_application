@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Bell, Check, Trash2 } from 'lucide-react'
 import { getNotifications, getUnreadCount, markNotificationsRead, deleteNotification, getAuth } from '../api'
 
@@ -9,39 +9,35 @@ export default function NotificationCenter() {
   const [loading, setLoading] = useState(false)
   const panelRef = useRef(null)
   const auth = getAuth()
-
-  const loadCounts = useCallback(async () => {
-    if (!auth) return
-    try {
-      const data = await getUnreadCount()
-      setUnreadCount(data.unread_count)
-    } catch {}
-  }, [auth])
-
-  const loadNotifications = useCallback(async () => {
-    if (!auth) return
-    setLoading(true)
-    try {
-      const data = await getNotifications()
-      setNotifications(data)
-    } catch {}
-    setLoading(false)
-  }, [auth])
+  const lastCount = useRef(0)
 
   useEffect(() => {
     if (!auth) return
-    loadCounts()
-    loadNotifications()
-    const interval = setInterval(() => {
-      loadCounts()
-      if (open) loadNotifications()
-    }, 5000)
+
+    const fetchCounts = async () => {
+      try {
+        const data = await getUnreadCount()
+        const c = data.unread_count || 0
+        if (c !== lastCount.current) {
+          lastCount.current = c
+          setUnreadCount(c)
+        }
+      } catch {}
+    }
+
+    fetchCounts()
+    const interval = setInterval(fetchCounts, 8000)
     return () => clearInterval(interval)
-  }, [auth, loadCounts, loadNotifications, open])
+  }, [auth])
 
   useEffect(() => {
-    if (open) loadNotifications()
-  }, [open, loadNotifications])
+    if (!open || !auth) return
+    setLoading(true)
+    getNotifications()
+      .then(data => setNotifications(data))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [open, auth])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -55,21 +51,24 @@ export default function NotificationCenter() {
     await markNotificationsRead(id)
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
     setUnreadCount(prev => Math.max(0, prev - 1))
+    lastCount.current = Math.max(0, lastCount.current - 1)
   }
 
   const handleMarkAllRead = async () => {
     await markNotificationsRead()
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
     setUnreadCount(0)
+    lastCount.current = 0
   }
 
   const handleDelete = async (id) => {
+    const n = notifications.find(x => x.id === id)
     await deleteNotification(id)
-    setNotifications(prev => prev.filter(n => n.id !== id))
-    setUnreadCount(prev => {
-      const n = notifications.find(x => x.id === id)
-      return n && !n.read ? Math.max(0, prev - 1) : prev
-    })
+    setNotifications(prev => prev.filter(x => x.id !== id))
+    if (n && !n.read) {
+      setUnreadCount(prev => Math.max(0, prev - 1))
+      lastCount.current = Math.max(0, lastCount.current - 1)
+    }
   }
 
   const handleClick = (notif) => {
@@ -89,8 +88,8 @@ export default function NotificationCenter() {
       >
         <Bell size={18} className="text-white/70" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-amber-400 text-black text-[10px] font-bold rounded-full flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-amber-400 text-black text-[10px] font-bold rounded-full flex items-center justify-center">
+            {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
@@ -107,13 +106,13 @@ export default function NotificationCenter() {
           </div>
 
           <div className="overflow-y-auto max-h-80">
-            {loading && (
+            {loading && notifications.length === 0 && (
               <p className="text-white/30 text-sm text-center py-6">Loading...</p>
             )}
             {!loading && notifications.length === 0 && (
               <p className="text-white/30 text-sm text-center py-6">No notifications yet</p>
             )}
-            {!loading && notifications.map((n) => (
+            {notifications.map((n) => (
               <div
                 key={n.id}
                 className={`px-4 py-3 border-b border-white/5 hover:bg-white/[0.03] transition-colors ${!n.read ? 'bg-amber-400/5' : ''}`}
