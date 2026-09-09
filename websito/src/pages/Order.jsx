@@ -98,9 +98,7 @@ export default function Order() {
         setLat(latVal)
         setLng(lngVal)
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latVal}&lon=${lngVal}&zoom=18&addressdetails=1`, {
-            headers: { 'User-Agent': 'BurgerSupreme/1.0' }
-          })
+          const res = await fetch(`https://geocode.maps.co/reverse?lat=${latVal}&lon=${lngVal}&format=json`)
           const data = await res.json()
           if (data && data.display_name) {
             setAddress(data.display_name)
