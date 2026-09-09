@@ -3,12 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Minus, Plus, MapPin, Navigation, CheckCircle, XCircle, ShoppingBag } from 'lucide-react'
 import { getMenuItem, placeOrder, getProfile, getAuth, getMyOrders, cancelOrder } from '../api'
 import { useWSEvent } from '../hooks/useWebSocket'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function Order() {
   const { id } = useParams()
   const navigate = useNavigate()
   const auth = getAuth()
+  const rate = useExchangeRate()
 
   const [item, setItem] = useState(null)
   const [qty, setQty] = useState(1)
@@ -185,13 +188,13 @@ export default function Order() {
                       <div className="w-10 h-10 rounded-lg bg-cover bg-center shrink-0" style={{ backgroundImage: `url('${oi.item_image}')` }} />
                       <span className="flex-1 text-white/70">{oi.item_title} x{oi.quantity}</span>
                       <span className="text-amber-400 font-bold text-right">
-                        <span className="block">TSh {Number(oi.price_tsh || 0).toLocaleString()}</span>
+                        <span className="block">{formatTsh(oi.price, rate)}</span>
                         <span className="block text-white/40 text-xs">${parseFloat(oi.price).toFixed(2)}</span>
                       </span>
                     </div>
                   ))}
                   <div className="text-right mt-3 pt-3 border-t border-white/5">
-                    <span className="text-lg font-bold text-amber-400">Total: TSh {Number(order.total_tsh || 0).toLocaleString()} (${parseFloat(order.total).toFixed(2)})</span>
+                    <span className="text-lg font-bold text-amber-400">Total: {formatTsh(order.total, rate)} (${parseFloat(order.total).toFixed(2)})</span>
                   </div>
                 </div>
               ))}
@@ -254,13 +257,13 @@ export default function Order() {
                       <div className="w-10 h-10 rounded-lg bg-cover bg-center shrink-0" style={{ backgroundImage: `url('${oi.item_image}')` }} />
                       <span className="flex-1 text-white/70">{oi.item_title} x{oi.quantity}</span>
                       <span className="text-amber-400 font-bold text-right">
-                        <span className="block">TSh {Number(oi.price_tsh || 0).toLocaleString()}</span>
+                        <span className="block">{formatTsh(oi.price, rate)}</span>
                         <span className="block text-white/40 text-xs">${parseFloat(oi.price).toFixed(2)}</span>
                       </span>
                     </div>
                   ))}
                   <div className="text-right mt-3 pt-3 border-t border-white/5">
-                    <span className="text-lg font-bold text-amber-400">Total: TSh {Number(order.total_tsh || 0).toLocaleString()} (${parseFloat(order.total).toFixed(2)})</span>
+                    <span className="text-lg font-bold text-amber-400">Total: {formatTsh(order.total, rate)} (${parseFloat(order.total).toFixed(2)})</span>
                   </div>
                 </div>
               ))}
@@ -272,7 +275,7 @@ export default function Order() {
   )
 
   const mapUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : null
-  const tshTotal = item.price_tsh ? parseInt(item.price_tsh) * qty : 0
+  const tshTotal = item.price ? Math.round(item.price * rate) * qty : 0
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
@@ -291,7 +294,7 @@ export default function Order() {
                 <span className="text-white/40 text-sm">{item.calories} cal</span>
               </div>
               <div className="mt-4">
-                <p className="text-3xl font-bold text-amber-400">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-amber-400">{formatTsh(item.price, rate)}</p>
                 <p className="text-white/40 text-lg">${parseFloat(item.price).toFixed(2)}</p>
               </div>
 
@@ -312,7 +315,7 @@ export default function Order() {
               <div className="mt-6 p-4 rounded-xl bg-white/[0.03] border border-white/5">
                 <div className="flex justify-between text-white/70 text-sm">
                   <span>Total ({qty}x)</span>
-                  <span className="text-amber-400 font-bold">TSh {tshTotal.toLocaleString()} (${(parseFloat(item.price) * qty).toFixed(2)})</span>
+                  <span className="text-amber-400 font-bold">{formatTsh(item.price * qty, rate)} (${(parseFloat(item.price) * qty).toFixed(2)})</span>
                 </div>
               </div>
             </div>

@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag, Trash2, CheckCircle } from 'lucide-react'
 import { getAllOrders, getAuth, updateOrderStatus, deleteOrder } from '../api'
 import { useWSEvent } from '../hooks/useWebSocket'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 const STATUSES = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled', 'order_complete']
 
 export default function AdminOrders() {
   const navigate = useNavigate()
+  const rate = useExchangeRate()
   const [orders, setOrders] = useState([])
   const [updating, setUpdating] = useState(null)
   const [notifications, setNotifications] = useState([])
@@ -141,7 +144,7 @@ export default function AdminOrders() {
                     <div className="w-10 h-10 rounded-lg bg-cover bg-center shrink-0" style={{ backgroundImage: `url('${oi.item_image}')` }} />
                     <span className="flex-1 text-white/70">{oi.item_title} x{oi.quantity}</span>
                     <span className="text-amber-400 font-bold text-right">
-                      <span className="block">TSh {Number(oi.price_tsh || 0).toLocaleString()}</span>
+                      <span className="block">{formatTsh(oi.price, rate)}</span>
                       <span className="block text-white/40 text-xs">${parseFloat(oi.price).toFixed(2)}</span>
                     </span>
                   </div>
@@ -152,7 +155,7 @@ export default function AdminOrders() {
                     <p>{order.phone && `📞 ${order.phone}`}</p>
                     {order.notes && <p>📝 {order.notes}</p>}
                   </div>
-                  <span className="text-lg font-bold text-amber-400">Total: TSh {Number(order.total_tsh || 0).toLocaleString()} (${parseFloat(order.total).toFixed(2)})</span>
+                  <span className="text-lg font-bold text-amber-400">Total: {formatTsh(order.total, rate)}</span>
                 </div>
               </div>
             ))}

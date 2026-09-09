@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { Pencil, Trash2, X, Check, Beef, GlassWater } from 'lucide-react'
 import { getAdminMenuItems, updateMenuItem, deleteMenuItem, getAuth } from '../api'
 import { useWSEvent } from '../hooks/useWebSocket'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminMenuList() {
   const navigate = useNavigate()
+  const rate = useExchangeRate()
   const [items, setItems] = useState([])
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({})
@@ -35,14 +38,14 @@ export default function AdminMenuList() {
 
   const startEdit = (item) => {
     setEditing(item.id)
-    setForm({ title: item.title, description: item.description, price: item.price, price_tsh: item.price_tsh, calories: item.calories, image_url: item.image_url })
+    setForm({ title: item.title, description: item.description, price: item.price, calories: item.calories, image_url: item.image_url })
   }
 
   const cancelEdit = () => { setEditing(null); setForm({}) }
 
   const saveEdit = async (id) => {
     try {
-      await updateMenuItem(id, { ...form, price: form.price ? parseFloat(form.price) : 0, price_tsh: form.price_tsh ? parseInt(form.price_tsh) : 0, calories: form.calories ? parseInt(form.calories) : 0 })
+      await updateMenuItem(id, { ...form, price: form.price ? parseFloat(form.price) : 0, calories: form.calories ? parseInt(form.calories) : 0 })
       setMsg('Item updated')
       setEditing(null)
       load()
@@ -100,8 +103,7 @@ export default function AdminMenuList() {
             <div className="flex-1 grid grid-cols-2 md:grid-cols-6 gap-2">
               <input value={form.title} onChange={e => setForm({...form, title: e.target.value})} className={inputClass} placeholder="Title" />
               <input value={form.description} onChange={e => setForm({...form, description: e.target.value})} className={`${inputClass} md:col-span-2`} placeholder="Description" />
-              <input type="number" step="0.01" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className={inputClass} placeholder="Price $" />
-              <input type="number" value={form.price_tsh} onChange={e => setForm({...form, price_tsh: e.target.value})} className={inputClass} placeholder="Price TSh" />
+              <input type="number" step="0.01" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className={inputClass} placeholder="Price USD" />
               <input type="number" value={form.calories} onChange={e => setForm({...form, calories: e.target.value})} className={inputClass} placeholder="Cal" />
               <div className="md:col-span-6 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-cover bg-center shrink-0" style={{ backgroundImage: `url('${form.image_url || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=80'}')` }} />
@@ -120,7 +122,7 @@ export default function AdminMenuList() {
               <p className="text-white/40 text-sm truncate">{item.description}</p>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+              <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
               <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
               <p className="text-white/30 text-xs mt-1">{item.calories} cal</p>
             </div>

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMenu, getAuth } from '../api'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function MenuList() {
   const navigate = useNavigate()
   const auth = getAuth()
+  const rate = useExchangeRate()
   const [items, setItems] = useState([])
 
   const goToOrder = (id) => {
@@ -43,7 +46,7 @@ export default function MenuList() {
                   <p className="text-white/40 text-sm truncate">{item.description}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                  <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                   <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   <p className="text-white/30 text-xs mt-1">{item.calories} cal</p>
                 </div>
@@ -64,7 +67,7 @@ export default function MenuList() {
                   <p className="text-white/40 text-sm truncate">{item.description}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                  <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                   <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   <p className="text-white/30 text-xs mt-1">{item.calories} cal</p>
                 </div>

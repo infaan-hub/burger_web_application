@@ -23,6 +23,7 @@ import ConnectionIndicator from './components/ConnectionIndicator'
 import PushPermissionBanner from './components/PushPermissionBanner'
 import { connect, disconnect, addEventListeners } from './services/websocket'
 import { initPush, playNotificationSound } from './services/push'
+import { ExchangeProvider } from './context/ExchangeContext'
 import { getAuth } from './api'
 
 function Layout({ children }) {
@@ -55,9 +56,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <ConnectionIndicator />
-      <PushPermissionBanner />
-      <Routes>
+      <ExchangeProvider>
+        <ConnectionIndicator />
+        <PushPermissionBanner />
+        <Routes>
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -77,7 +79,8 @@ function App() {
         <Route path="/admin/users" element={<Layout><AdminUsers /></Layout>} />
         <Route path="/admin/settings" element={<Layout><Settings /></Layout>} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </ExchangeProvider>
     </BrowserRouter>
   )
 }

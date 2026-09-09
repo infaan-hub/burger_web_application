@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { ArrowLeft, KeyRound } from 'lucide-react'
 import { resetPassword } from '../api'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function ResetPassword() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [params] = useSearchParams()
   const [username, setUsername] = useState(params.get('username') || '')
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState(location.state?.token || '')
   const [newPassword, setNewPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')

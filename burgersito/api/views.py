@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import MenuItem, Ingredient, ContactMessage, Order, PasswordResetToken, PushSubscription, Notification
+from .exchange import get_usd_to_tsh, usd_to_tsh
 from .serializers import (
     MenuItemSerializer,
     IngredientSerializer,
@@ -51,6 +52,13 @@ def health_check(request):
     except Exception:
         pass
     return Response({'status': 'ok', 'database': db_ok})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def exchange_rate(request):
+    rate = get_usd_to_tsh()
+    return Response({'usd_to_tsh': rate, 'currency': 'TSh'})
 
 
 # ─── Menu ───
@@ -204,8 +212,12 @@ def login(request):
     serializer = LoginSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    username = serializer.validated_data['username']
+    user = User.objects.filter(username=username).first()
+    if user and not user.is_active:
+        return Response({'error': 'User blocked'}, status=status.HTTP_403_FORBIDDEN)
     user = authenticate(
-        username=serializer.validated_data['username'],
+        username=username,
         password=serializer.validated_data['password'],
     )
     if user is not None:
@@ -314,8 +326,12 @@ def admin_login(request):
     serializer = LoginSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    username = serializer.validated_data['username']
+    user = User.objects.filter(username=username).first()
+    if user and not user.is_active:
+        return Response({'error': 'User blocked'}, status=status.HTTP_403_FORBIDDEN)
     user = authenticate(
-        username=serializer.validated_data['username'],
+        username=username,
         password=serializer.validated_data['password'],
     )
     if user is not None and user.is_staff:

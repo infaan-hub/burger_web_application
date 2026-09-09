@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Flame, ShoppingCart } from 'lucide-react'
 import { getFoods, getDrinks, getAuth } from '../api'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function Dashboard() {
   const navigate = useNavigate()
   const auth = getAuth()
+  const rate = useExchangeRate()
   const [foods, setFoods] = useState([])
   const [drinks, setDrinks] = useState([])
 
@@ -41,7 +44,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <div>
-                    <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                    <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                     <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   </div>
                   <span className="text-white/30 text-xs">{item.calories} cal</span>
@@ -71,7 +74,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <div>
-                    <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                    <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                     <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   </div>
                   <span className="text-white/30 text-xs">{item.calories} cal</span>

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFoods, getDrinks, getIngredients, getAuth } from '../api'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 const iconMap = { Beef, Wheat, Sparkles, Cherry, Coffee, CupSoda, Drumstick, Croissant, Droplets, Sandwich, Cookie, Flame }
@@ -74,6 +76,7 @@ function CookieConsent() {
 export default function Home() {
   const navigate = useNavigate()
   const auth = getAuth()
+  const rate = useExchangeRate()
   const [scrolled, setScrolled] = useState(false)
   const [foods, setFoods] = useState([])
   const [drinks, setDrinks] = useState([])
@@ -151,7 +154,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <div>
-                    <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                    <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                     <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   </div>
                   <span className="text-white/30 text-xs">{item.calories} cal</span>
@@ -181,7 +184,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <div>
-                    <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                    <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                     <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                   </div>
                   <span className="text-white/30 text-xs">{item.calories} cal</span>

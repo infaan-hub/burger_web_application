@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { Users, Beef, MessageSquare, GlassWater, Pencil, Trash2, X, Check, Upload } from 'lucide-react'
 import { getAdminDashboard, getAuth, adminAddFood, adminAddDrink, adminCreateUser, getAdminMenuItems, updateMenuItem, deleteMenuItem, uploadImage } from '../api'
 import { useWSEvent } from '../hooks/useWebSocket'
+import { useExchangeRate } from '../context/ExchangeContext'
+import { formatTsh } from '../services/exchange'
 
 import BackgroundVideo from '../components/BackgroundVideo'
 export default function AdminDashboard() {
   const navigate = useNavigate()
+  const rate = useExchangeRate()
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
@@ -16,8 +19,8 @@ export default function AdminDashboard() {
   const [editForm, setEditForm] = useState({})
   const [notifications, setNotifications] = useState([])
 
-  const [food, setFood] = useState({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
-  const [drink, setDrink] = useState({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
+  const [food, setFood] = useState({ title: '', description: '', price: '', calories: '', image_url: '' })
+  const [drink, setDrink] = useState({ title: '', description: '', price: '', calories: '', image_url: '' })
   const [userForm, setUserForm] = useState({ username: '', password: '' })
   const [uploadingFood, setUploadingFood] = useState(false)
   const [uploadingDrink, setUploadingDrink] = useState(false)
@@ -85,8 +88,8 @@ export default function AdminDashboard() {
   const handleAddFood = async (e) => {
     e.preventDefault(); setError('')
     try {
-      await adminAddFood({ ...food, price: food.price ? parseFloat(food.price) : 0, price_tsh: food.price_tsh ? parseInt(food.price_tsh) : 0, calories: food.calories ? parseInt(food.calories) : 0 })
-      showMsg('Food added!'); setFood({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
+      await adminAddFood({ ...food, price: food.price ? parseFloat(food.price) : 0, calories: food.calories ? parseInt(food.calories) : 0 })
+      showMsg('Food added!'); setFood({ title: '', description: '', price: '', calories: '', image_url: '' })
       load()
     } catch (err) { setError(err.message) }
   }
@@ -94,8 +97,8 @@ export default function AdminDashboard() {
   const handleAddDrink = async (e) => {
     e.preventDefault(); setError('')
     try {
-      await adminAddDrink({ ...drink, price: drink.price ? parseFloat(drink.price) : 0, price_tsh: drink.price_tsh ? parseInt(drink.price_tsh) : 0, calories: drink.calories ? parseInt(drink.calories) : 0 })
-      showMsg('Drink added!'); setDrink({ title: '', description: '', price: '', price_tsh: '', calories: '', image_url: '' })
+      await adminAddDrink({ ...drink, price: drink.price ? parseFloat(drink.price) : 0, calories: drink.calories ? parseInt(drink.calories) : 0 })
+      showMsg('Drink added!'); setDrink({ title: '', description: '', price: '', calories: '', image_url: '' })
       load()
     } catch (err) { setError(err.message) }
   }
@@ -111,12 +114,12 @@ export default function AdminDashboard() {
 
   const startEdit = (item) => {
     setEditing(item.id)
-    setEditForm({ title: item.title, description: item.description, price: item.price, price_tsh: item.price_tsh, calories: item.calories, image_url: item.image_url })
+    setEditForm({ title: item.title, description: item.description, price: item.price, calories: item.calories, image_url: item.image_url })
   }
 
   const saveEdit = async (id) => {
     try {
-      await updateMenuItem(id, { ...editForm, price: editForm.price ? parseFloat(editForm.price) : 0, price_tsh: editForm.price_tsh ? parseInt(editForm.price_tsh) : 0, calories: editForm.calories ? parseInt(editForm.calories) : 0 })
+      await updateMenuItem(id, { ...editForm, price: editForm.price ? parseFloat(editForm.price) : 0, calories: editForm.calories ? parseInt(editForm.calories) : 0 })
       showMsg('Item updated'); setEditing(null); load()
     } catch (e) { setError(e.message) }
   }
@@ -214,8 +217,7 @@ export default function AdminDashboard() {
             <input placeholder="Title" value={food.title} onChange={update(setFood)('title')} className={inputClass} required />
             <input placeholder="Description" value={food.description} onChange={update(setFood)('description')} className={inputClass} required />
             <div className="flex gap-3">
-              <input type="number" step="0.01" placeholder="Price $" value={food.price} onChange={update(setFood)('price')} className={inputClass} required />
-              <input type="number" placeholder="Price TSh" value={food.price_tsh} onChange={update(setFood)('price_tsh')} className={inputClass} required />
+              <input type="number" step="0.01" placeholder="Price USD" value={food.price} onChange={update(setFood)('price')} className={inputClass} required />
               <input type="number" placeholder="Calories" value={food.calories} onChange={update(setFood)('calories')} className={inputClass} required />
             </div>
             <div className="flex gap-2">
@@ -241,8 +243,7 @@ export default function AdminDashboard() {
             <input placeholder="Title" value={drink.title} onChange={update(setDrink)('title')} className={inputClass} required />
             <input placeholder="Description" value={drink.description} onChange={update(setDrink)('description')} className={inputClass} required />
             <div className="flex gap-3">
-              <input type="number" step="0.01" placeholder="Price $" value={drink.price} onChange={update(setDrink)('price')} className={inputClass} required />
-              <input type="number" placeholder="Price TSh" value={drink.price_tsh} onChange={update(setDrink)('price_tsh')} className={inputClass} required />
+              <input type="number" step="0.01" placeholder="Price USD" value={drink.price} onChange={update(setDrink)('price')} className={inputClass} required />
               <input type="number" placeholder="Calories" value={drink.calories} onChange={update(setDrink)('calories')} className={inputClass} required />
             </div>
             <div className="flex gap-2">
@@ -276,8 +277,7 @@ export default function AdminDashboard() {
                   <div className="flex-1 grid grid-cols-2 md:grid-cols-6 gap-2">
                     <input value={editForm.title} onChange={(e) => setEditForm({...editForm, title: e.target.value})} className={inputClass} placeholder="Title" />
                     <input value={editForm.description} onChange={(e) => setEditForm({...editForm, description: e.target.value})} className={`${inputClass} md:col-span-2`} placeholder="Description" />
-                    <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className={inputClass} placeholder="Price $" />
-                    <input type="number" value={editForm.price_tsh} onChange={(e) => setEditForm({...editForm, price_tsh: e.target.value})} className={inputClass} placeholder="Price TSh" />
+                    <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className={inputClass} placeholder="Price USD" />
                     <input type="number" value={editForm.calories} onChange={(e) => setEditForm({...editForm, calories: e.target.value})} className={inputClass} placeholder="Cal" />
                   </div>
                   <div className="flex gap-2 shrink-0">
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
                     <p className="text-white/40 text-sm truncate">{item.description}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-amber-400 font-bold text-sm">TSh {Number(item.price_tsh || 0).toLocaleString()}</p>
+                    <p className="text-amber-400 font-bold text-sm">{formatTsh(item.price, rate)}</p>
                     <p className="text-white/30 text-xs">${parseFloat(item.price).toFixed(2)}</p>
                     <p className="text-white/30 text-xs mt-1">{item.calories} cal</p>
                   </div>
