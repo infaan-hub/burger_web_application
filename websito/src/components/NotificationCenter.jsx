@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Bell, Check, Trash2, X } from 'lucide-react'
+import { Bell, Check, Trash2 } from 'lucide-react'
 import { getNotifications, getUnreadCount, markNotificationsRead, deleteNotification, getAuth } from '../api'
-import { useWSEvent } from '../hooks/useWebSocket'
 
 export default function NotificationCenter() {
   const [open, setOpen] = useState(false)
@@ -30,10 +29,15 @@ export default function NotificationCenter() {
   }, [auth])
 
   useEffect(() => {
+    if (!auth) return
     loadCounts()
-    const interval = setInterval(loadCounts, 30000)
+    loadNotifications()
+    const interval = setInterval(() => {
+      loadCounts()
+      if (open) loadNotifications()
+    }, 5000)
     return () => clearInterval(interval)
-  }, [loadCounts])
+  }, [auth, loadCounts, loadNotifications, open])
 
   useEffect(() => {
     if (open) loadNotifications()
@@ -46,17 +50,6 @@ export default function NotificationCenter() {
     if (open) document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [open])
-
-  useWSEvent('NEW_ORDER', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('ORDER_STATUS_CHANGED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('NEW_USER', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('CONTACT_MESSAGE', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('ORDER_DELETED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('USER_UPDATED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('USER_DELETED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('MENU_ITEM_ADDED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('MENU_ITEM_UPDATED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
-  useWSEvent('MENU_ITEM_DELETED', useCallback(() => { loadCounts(); if (open) loadNotifications() }, [loadCounts, loadNotifications, open]))
 
   const handleMarkRead = async (id) => {
     await markNotificationsRead(id)

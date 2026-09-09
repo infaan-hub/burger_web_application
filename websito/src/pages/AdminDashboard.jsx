@@ -33,6 +33,15 @@ export default function AdminDashboard() {
 
   useEffect(load, [load])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (auth) {
+        getAdminDashboard().then(setData).catch(() => {})
+      }
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [auth])
+
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000) }
 
   const addNotification = (title, body) => {
