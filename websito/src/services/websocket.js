@@ -20,8 +20,8 @@ let wsInstance = null
 let listeners = {}
 let reconnectTimer = null
 let reconnectAttempts = 0
-const MAX_RECONNECT_ATTEMPTS = 50
-const BASE_DELAY = 1000
+const MAX_RECONNECT_ATTEMPTS = 5
+const BASE_DELAY = 2000
 let connectionStatus = 'DISCONNECTED'
 let statusListeners = new Set()
 
