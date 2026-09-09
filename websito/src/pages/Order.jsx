@@ -92,7 +92,22 @@ export default function Order() {
     setLocating(true)
     setError('')
     navigator.geolocation.getCurrentPosition(
-      (pos) => { setLat(pos.coords.latitude); setLng(pos.coords.longitude); setLocating(false) },
+      async (pos) => {
+        const latVal = pos.coords.latitude
+        const lngVal = pos.coords.longitude
+        setLat(latVal)
+        setLng(lngVal)
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latVal}&lon=${lngVal}&zoom=18&addressdetails=1`, {
+            headers: { 'User-Agent': 'BurgerSupreme/1.0' }
+          })
+          const data = await res.json()
+          if (data && data.display_name) {
+            setAddress(data.display_name)
+          }
+        } catch {}
+        setLocating(false)
+      },
       () => { setError('Could not get location'); setLocating(false) },
       { enableHighAccuracy: true }
     )
@@ -348,11 +363,11 @@ export default function Order() {
                     </button>
                   </div>
                   {lat && lng && (
-                    <div className="flex items-center gap-2 text-white/40 text-xs">
-                      <MapPin size={14} />
-                      <span>{lat.toFixed(6)}, {lng.toFixed(6)}</span>
+                    <div className="flex items-start gap-2 text-white/40 text-xs">
+                      <MapPin size={14} className="shrink-0 mt-0.5" />
+                      <span className="flex-1">{address || `${lat.toFixed(6)}, ${lng.toFixed(6)}`}</span>
                       {mapUrl && (
-                        <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-amber-400 underline ml-2">View on Map</a>
+                        <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-amber-400 underline ml-2 shrink-0">View on Map</a>
                       )}
                     </div>
                   )}
