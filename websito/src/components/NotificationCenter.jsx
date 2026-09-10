@@ -1,6 +1,18 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Bell, Check, Trash2 } from 'lucide-react'
 import { getNotifications, getUnreadCount, markNotificationsRead, deleteNotification, getAuth } from '../api'
+
+let notifAudio = null
+function playNotifSound() {
+  try {
+    if (!notifAudio) {
+      notifAudio = new Audio('/notification.mp3')
+      notifAudio.volume = 0.5
+    }
+    notifAudio.currentTime = 0
+    notifAudio.play().catch(() => {})
+  } catch {}
+}
 
 export default function NotificationCenter() {
   const [open, setOpen] = useState(false)
@@ -11,30 +23,31 @@ export default function NotificationCenter() {
   const auth = getAuth()
   const lastCount = useRef(0)
 
+  const loadCounts = useCallback(async () => {
+    if (!auth) return
+    try {
+      const data = await getUnreadCount()
+      const c = data.unread_count || 0
+      if (c > lastCount.current) {
+        playNotifSound()
+      }
+      lastCount.current = c
+      setUnreadCount(c)
+    } catch {}
+  }, [auth])
+
   useEffect(() => {
     if (!auth) return
-
-    const fetchCounts = async () => {
-      try {
-        const data = await getUnreadCount()
-        const c = data.unread_count || 0
-        if (c !== lastCount.current) {
-          lastCount.current = c
-          setUnreadCount(c)
-        }
-      } catch {}
-    }
-
-    fetchCounts()
-    const interval = setInterval(fetchCounts, 8000)
+    loadCounts()
+    const interval = setInterval(loadCounts, 5000)
     return () => clearInterval(interval)
-  }, [auth])
+  }, [auth, loadCounts])
 
   useEffect(() => {
     if (!open || !auth) return
     setLoading(true)
     getNotifications()
-      .then(data => setNotifications(data))
+      .then(data => setNotifications(data || []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [open, auth])
