@@ -198,8 +198,14 @@ export function saveAuth(data) {
 }
 
 export function getAuth() {
-  const stored = localStorage.getItem('auth')
-  return stored ? JSON.parse(stored) : null
+  try {
+    const stored = localStorage.getItem('auth')
+    if (!stored) return null
+    return JSON.parse(stored)
+  } catch {
+    localStorage.removeItem('auth')
+    return null
+  }
 }
 
 export function getNotifications() {

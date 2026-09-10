@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen, onClose }) {
     setLoading(true)
     try {
       const data = await getNotifications()
-      setNotifications(data)
+      setNotifications(data || [])
     } catch {}
     setLoading(false)
   }, [auth])

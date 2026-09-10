@@ -196,23 +196,23 @@ function onPermissionChange(callback) {
 }
 
 async function initPush() {
-  if (!isPushSupported()) {
-    console.log('[Push] Push notifications not supported in this browser')
-    return
-  }
-  await registerServiceWorker()
-  await getPermissionState()
-  const perm = await getPermissionState()
-  if (perm === 'granted') {
-    if (!swRegistration) {
-      swRegistration = await navigator.serviceWorker.getRegistration('/')
-    }
-    if (swRegistration) {
-      const existing = await swRegistration.pushManager.getSubscription()
-      if (!existing) {
-        await subscribe()
+  try {
+    if (!isPushSupported()) return
+    await registerServiceWorker()
+    const perm = await getPermissionState()
+    if (perm === 'granted') {
+      if (!swRegistration) {
+        swRegistration = await navigator.serviceWorker.getRegistration('/')
+      }
+      if (swRegistration) {
+        const existing = await swRegistration.pushManager.getSubscription()
+        if (!existing) {
+          await subscribe()
+        }
       }
     }
+  } catch (e) {
+    console.error('[Push] initPush error:', e)
   }
 }
 

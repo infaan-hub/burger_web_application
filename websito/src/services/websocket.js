@@ -51,24 +51,25 @@ function dispatchEvent(event) {
 }
 
 function connect() {
-  if (wsInstance && (wsInstance.readyState === WebSocket.CONNECTING || wsInstance.readyState === WebSocket.OPEN)) {
-    return
-  }
-
-  const token = getToken()
-  if (!token) return
-
-  const wsUrl = `${getWsUrl()}/ws/events/?token=${token}`
-  notifyStatusListeners('CONNECTING')
-
   try {
-    wsInstance = new WebSocket(wsUrl)
-  } catch (e) {
-    console.error('[WebSocket] Connection error:', e)
-    notifyStatusListeners('ERROR')
-    scheduleReconnect()
-    return
-  }
+    if (wsInstance && (wsInstance.readyState === WebSocket.CONNECTING || wsInstance.readyState === WebSocket.OPEN)) {
+      return
+    }
+
+    const token = getToken()
+    if (!token) return
+
+    const wsUrl = `${getWsUrl()}/ws/events/?token=${token}`
+    notifyStatusListeners('CONNECTING')
+
+    try {
+      wsInstance = new WebSocket(wsUrl)
+    } catch (e) {
+      console.error('[WebSocket] Connection error:', e)
+      notifyStatusListeners('ERROR')
+      scheduleReconnect()
+      return
+    }
 
   wsInstance.onopen = () => {
     console.log('[WebSocket] Connected')
@@ -103,6 +104,10 @@ function connect() {
 
   wsInstance.onerror = (error) => {
     console.error('[WebSocket] Error:', error)
+    notifyStatusListeners('ERROR')
+  }
+  } catch (e) {
+    console.error('[WebSocket] connect error:', e)
     notifyStatusListeners('ERROR')
   }
 }

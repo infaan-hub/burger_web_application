@@ -7,7 +7,7 @@ export function ExchangeProvider({ children }) {
   const [rate, setRate] = useState(2500)
 
   useEffect(() => {
-    getExchangeRate().then(setRate)
+    getExchangeRate().then(setRate).catch(() => {})
   }, [])
 
   return (
@@ -18,5 +18,9 @@ export function ExchangeProvider({ children }) {
 }
 
 export function useExchangeRate() {
-  return useContext(ExchangeContext)
+  try {
+    return useContext(ExchangeContext)
+  } catch {
+    return 2500
+  }
 }
