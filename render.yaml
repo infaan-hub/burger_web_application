@@ -30,4 +30,4 @@ services:
       - key: VAPID_PUBLIC_KEY
         sync: false
       - key: VAPID_CLAIM_EMAIL
-        value: "mailto:admin@burgersupreme.com"
+        value: "mailto:salehabdulrahim8587@gmail.com"

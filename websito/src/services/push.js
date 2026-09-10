@@ -110,12 +110,7 @@ async function subscribe() {
   try {
     const res = await fetch(`${API}/push/vapid-key/`)
     const data = await res.json()
-    vapidPublicKey = data.public_key
-      .replace(/-----BEGIN PUBLIC KEY-----/, '')
-      .replace(/-----END PUBLIC KEY-----/, '')
-      .replace(/\\n/g, '')
-      .replace(/\n/g, '')
-      .replace(/\s/g, '')
+    vapidPublicKey = (data.public_key || '').trim()
   } catch {
     console.error('[Push] Failed to fetch VAPID key')
     return null

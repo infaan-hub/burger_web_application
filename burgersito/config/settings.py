@@ -168,15 +168,6 @@ else:
     }
 
 # ─── VAPID / Web Push ───
-def _clean_pem(val):
-    if not val:
-        return ''
-    val = val.replace('\\n', '\n')
-    val = val.replace('\\', '')
-    if '-----BEGIN' in val and val.count('\n') < 3:
-        val = val.replace('-----BEGIN', '-----BEGIN\n').replace('-----END', '\n-----END')
-    return val.strip()
-
-VAPID_PRIVATE_KEY = _clean_pem(os.environ.get('VAPID_PRIVATE_KEY', ''))
-VAPID_PUBLIC_KEY = _clean_pem(os.environ.get('VAPID_PUBLIC_KEY', ''))
-VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL', 'mailto:admin@burgersupreme.com')
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL', 'mailto:salehabdulrahim8587@gmail.com')
