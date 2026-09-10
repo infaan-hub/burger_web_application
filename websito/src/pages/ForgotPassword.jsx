@@ -48,7 +48,7 @@ export default function ForgotPassword() {
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <button type="submit" disabled={loading} className="w-full py-3.5 bg-amber-400 text-black font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-amber-300 transition-colors cursor-pointer mt-2 disabled:opacity-50">
-            {loading ? 'Generating...' : 'Generate Reset Token'}
+            {loading ? 'Submitting...' : 'Submit'}
           </button>
         </form>
       </div>
