@@ -299,7 +299,7 @@ def forgot_password(request):
         PasswordResetToken.objects.filter(user=user).delete()
         reset_token = PasswordResetToken.objects.create(user=user)
         return Response({
-            'message': 'Reset token generated',
+            'message': 'Reset code generated',
             'token': reset_token.token,
         })
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -63,7 +63,7 @@ export default function ResetPassword() {
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
           <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} readOnly={!!params.get('username')} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required />
-          <input type="text" placeholder="Reset Token" value={token} onChange={(e) => setToken(e.target.value)} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required />
+          <input type="text" placeholder="Enter reset code" value={token} onChange={(e) => setToken(e.target.value)} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required />
           <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required minLength={6} />
           <input type="password" placeholder="Confirm New Password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 transition-colors" required />
           {error && <p className="text-red-400 text-sm">{error}</p>}

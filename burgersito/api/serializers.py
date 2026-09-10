@@ -144,9 +144,9 @@ class ResetPasswordSerializer(serializers.Serializer):
             user = User.objects.get(username=data['username'])
             reset_token = PasswordResetToken.objects.get(user=user, token=data['token'])
             if not reset_token.is_valid():
-                raise serializers.ValidationError('Reset token has expired. Please request a new one.')
+                raise serializers.ValidationError('Reset code has expired. Please request a new one.')
         except User.DoesNotExist:
-            raise serializers.ValidationError('Invalid username or reset token')
+            raise serializers.ValidationError('Invalid username or reset code')
         except PasswordResetToken.DoesNotExist:
-            raise serializers.ValidationError('Invalid reset token. Please request a new one.')
+            raise serializers.ValidationError('Invalid reset code. Please request a new one.')
         return data
